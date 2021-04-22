@@ -1,9 +1,10 @@
 import { Router } from "express";
-import usersRouter from "./users/router";
 
 /** @public */
 const router = Router();
 
-router.use("/users", usersRouter);
+router.use((req, res) => {
+	res.sendStatus(501); // TODO: remove
+});
 
 export default router;
