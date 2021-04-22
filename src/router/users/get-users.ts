@@ -17,5 +17,5 @@ export default async function getUsers({ filter = "", limit }: Query = {}): Prom
 	if (limit != null)
 		values.length = limit;
 
-	return values;
+	return values.filter((user) => !user.isDeleted);
 }
