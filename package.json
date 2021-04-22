@@ -13,6 +13,13 @@
   },
   "homepage": "https://github.com/epam-nodejs-program-2021-03-01/crud-app-example#readme",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "del-cli dist/*",
+    "build": "tsc",
+    "postbuild": "del-cli dist/**/*.type.js* dist/**/*.impl.d.ts"
+  },
+  "devDependencies": {
+    "del-cli": "3.0.1",
+    "typescript": "4.2.4"
   }
 }

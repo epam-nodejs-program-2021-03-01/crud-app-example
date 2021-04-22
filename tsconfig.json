@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		// Output
+		"target": "es2015",
+		"module": "commonjs",
+		"outDir": "dist",
+		"declaration": true,
+		"inlineSources": true,
+		"sourceMap": true,
+
+		// Development
+		"strict": true,
+		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"importsNotUsedAsValues": "error",
+	},
+}
