@@ -4,6 +4,7 @@ import sendStatus from "../../middlewares/send-status";
 import UserNotFoundError from "./user-not-found-error";
 import deleteUser from "./delete-user";
 import getUsers from "./get-users";
+import getUser from "./get-user";
 
 /** @private */
 const naturalNumber = /^\d+$/;
@@ -36,8 +37,23 @@ router.route("/")
 
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
-	.get(NOT_IMPLEMENTED, () => {
-		// TODO: get user
+	.get(async (req, res, next) => {
+		const userID = req.params.id;
+
+		try {
+			const user = await getUser(userID);
+
+			res.json(user);
+		} catch (error: unknown) {
+			if (error instanceof UserNotFoundError)
+				return res.status(404).json({
+					error: "Could not get user",
+					reason: error.message,
+				});
+
+			// delegate unknown error to error handler
+			next(error);
+		}
 	})
 	.patch(NOT_IMPLEMENTED, () => {
 		// TODO: update user
