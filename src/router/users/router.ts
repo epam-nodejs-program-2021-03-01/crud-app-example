@@ -1,6 +1,10 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
+import getUsers from "./get-users";
+
+/** @private */
+const naturalNumber = /^\d+$/;
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501);
@@ -10,11 +14,21 @@ const router = Router();
 
 router.route("/")
 	.all(allowMethods("GET", "POST"))
-	.all(NOT_IMPLEMENTED) // FIXME: remove
-	.get(() => {
-		// TODO: get all users
+	// GET /users?login-substring=[…]&limit=[…]
+	.get(async (req, res) => {
+		const query = req.query as Record<string, string | undefined>; // don't try to understand it, – feel it
+		const filter = query["login-substring"];
+
+		let limit: number | undefined;
+
+		if (query.limit?.match(naturalNumber))
+			limit = parseInt(query.limit, 10);
+
+		const users = await getUsers({ filter, limit });
+
+		res.json(users);
 	})
-	.post(() => {
+	.post(NOT_IMPLEMENTED, () => {
 		// TODO: create new user
 	});
 
