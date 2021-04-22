@@ -1,16 +1,16 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
-import UserNotFoundError from "./user-not-found-error";
-import deleteUser from "./delete-user";
-import getUsers from "./get-users";
-import getUser from "./get-user";
+import UsersService, { UserNotFoundError } from "../../services/users.service";
 
 /** @private */
 const naturalNumber = /^\d+$/;
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501);
+
+/** @private */
+const usersService = new UsersService();
 
 /** @public */
 const router = Router();
@@ -27,7 +27,7 @@ router.route("/")
 		if (query.limit?.match(naturalNumber))
 			limit = parseInt(query.limit, 10);
 
-		const users = await getUsers({ filter, limit });
+		const users = await usersService.getUsers({ filter, limit });
 
 		res.json(users);
 	})
@@ -41,7 +41,7 @@ router.route("/:id")
 		const userID = req.params.id;
 
 		try {
-			const user = await getUser(userID);
+			const user = await usersService.getUser(userID);
 
 			res.json(user);
 		} catch (error: unknown) {
@@ -62,7 +62,7 @@ router.route("/:id")
 		const userID = req.params.id;
 
 		try {
-			const user = await deleteUser(userID);
+			const user = await usersService.deleteUser(userID);
 
 			res.status(202).json(user);
 		} catch (error: unknown) {
