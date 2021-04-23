@@ -1,6 +1,6 @@
+import type { RequestHandler } from "express";
 import Joi from "joi";
 import { createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest } from "express-joi-validation";
-import type { RequestHandler } from "express";
 
 /** @private */
 interface RequestSchema extends ValidatedRequestSchema {
