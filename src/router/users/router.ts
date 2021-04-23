@@ -2,7 +2,7 @@ import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
 import UsersService from "../../services/users.service";
-import catchAsyncUserNotFoundError from "./catch-async-user-not-found-error";
+import handleAsyncErrors from "../handle-async-errors";
 
 /** @private */
 const naturalNumber = /^\d+$/;
@@ -38,7 +38,7 @@ router.route("/")
 
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
-	.get(catchAsyncUserNotFoundError("get user", async (req, res) => {
+	.get(handleAsyncErrors("get user", async (req, res) => {
 		const userID = req.params.id;
 		const user = await usersService.getUser(userID);
 	
@@ -47,7 +47,7 @@ router.route("/:id")
 	.patch(NOT_IMPLEMENTED, () => {
 		// TODO: update user
 	})
-	.delete(catchAsyncUserNotFoundError("delete user", async (req, res) => {
+	.delete(handleAsyncErrors("delete user", async (req, res) => {
 		const userID = req.params.id;
 		const user = await usersService.deleteUser(userID);
 

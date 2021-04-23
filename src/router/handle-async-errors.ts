@@ -1,12 +1,12 @@
 import type { RequestHandler } from "express";
-import { UserNotFoundError } from "../../services/users.service";
+import { UserNotFoundError } from "../services/users.service";
 
 /** @private */
 // this helps reducing line length
 type Params = [ actionDescription: string, handler: RequestHandler ];
 
 /** @public */
-const catchAsyncUserNotFoundError = (...args: Params): RequestHandler => async (req, res, next) => {
+const handleAsyncErrors = (...args: Params): RequestHandler => async (req, res, next) => {
 	const [ actionDescription, handler ] = args;
 
 	try {
@@ -22,4 +22,4 @@ const catchAsyncUserNotFoundError = (...args: Params): RequestHandler => async (
 	}
 };
 
-export default catchAsyncUserNotFoundError;
+export default handleAsyncErrors;
