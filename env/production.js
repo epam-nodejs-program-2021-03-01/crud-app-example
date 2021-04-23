@@ -1,11 +1,2 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-"use strict";
-
-const env = require("dotenv-extended");
-const path = require("path");
-const { options } = require("./common");
-
-env.load({
-	...options,
-	path: path.resolve(__dirname, ".env.production"),
-});
+// Production environment variables are set up via Heroku application settings
+//   https://dashboard.heroku.com/apps/shrouded-bayou-97400/settings
