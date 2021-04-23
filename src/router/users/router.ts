@@ -3,7 +3,7 @@ import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
 import UsersService from "../../services/users.service";
 import handleAsyncErrors from "../handle-async-errors";
-import validateQuery, { ValidRequest } from "./validate-query-root-path-get";
+import validateRootPathGet, { ValidRequest } from "./validate-root-path-get";
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501);
@@ -16,7 +16,7 @@ const router = Router();
 
 router.route("/")
 	.all(allowMethods("GET", "POST"))
-	.get(validateQuery(), async (req: ValidRequest, res) => {
+	.get(...validateRootPathGet(), async (req: ValidRequest, res) => {
 		const users = await usersService.getUsers({
 			filter: req.query["login-substring"],
 			limit: req.query.limit,
