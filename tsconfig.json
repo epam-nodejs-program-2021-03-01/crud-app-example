@@ -8,6 +8,7 @@
 		"sourceMap": true,
 
 		// Development
+		"allowJs": true,
 		"strict": true,
 		"downlevelIteration": true,
 		"esModuleInterop": true,

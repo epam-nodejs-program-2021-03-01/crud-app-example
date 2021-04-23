@@ -1,10 +1,11 @@
-// @ts-check
+/* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
 
-const { resolve } = require("path");
+const env = require("dotenv-extended");
+const path = require("path");
 const { options } = require("./common");
 
-require("dotenv-extended").load({
+env.load({
 	...options,
-	path: resolve(__dirname, ".env.production"),
+	path: path.resolve(__dirname, ".env.production"),
 });

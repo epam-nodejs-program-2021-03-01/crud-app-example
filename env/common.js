@@ -1,12 +1,12 @@
-// @ts-check
+/* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
 
-const { resolve } = require("path");
+const path = require("path");
 
 /** @public */
 const options = {
-	schema: resolve(__dirname, ".env.schema"),
-	defaults: resolve(__dirname, ".env.defaults"),
+	schema: path.resolve(__dirname, ".env.schema"),
+	defaults: path.resolve(__dirname, ".env.defaults"),
 	silent: false,
 	errorOnMissing: true
 };
