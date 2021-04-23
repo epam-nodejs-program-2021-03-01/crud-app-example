@@ -14,7 +14,7 @@ interface RequestSchema extends ValidatedRequestSchema {
 export type ValidRequest = ValidatedRequest<RequestSchema>;
 
 /** @private */
-// Validate req.body for `.route("/").post()` requests
+// Validate req.body for "POST /users" requests
 const validateBody = createValidator().body(Joi.object({
 	login: Joi.string()
 		.required()

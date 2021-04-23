@@ -13,7 +13,7 @@ interface RequestSchema extends ValidatedRequestSchema {
 export type ValidRequest = ValidatedRequest<RequestSchema>;
 
 /** @private */
-// Validate req.query for `.route("/").get()` requests
+// Validate req.query for "GET /users" requests
 const validateQuery = createValidator().query(Joi.object({
 	"login-substring": Joi.string()
 		.optional()

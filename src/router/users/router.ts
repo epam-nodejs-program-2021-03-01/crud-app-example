@@ -3,8 +3,8 @@ import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
 import UsersService from "../../services/users.service";
 import handleAsyncErrors from "../handle-async-errors";
-import validateRootPathGet, { ValidRequest as ValidRootPathGetRequest } from "./validate-root-path-get";
-import validateRootPathPost, { ValidRequest as ValidRootPathPostRequest } from "./validate-root-path-post";
+import validateUsersGet, { ValidRequest as UsersGetRequest } from "./validate-users-get";
+import validateUsersPost, { ValidRequest as UsersPostRequest } from "./validate-users-post";
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501);
@@ -17,7 +17,7 @@ const router = Router();
 
 router.route("/")
 	.all(allowMethods("GET", "POST"))
-	.get(...validateRootPathGet(), async (req: ValidRootPathGetRequest, res) => {
+	.get(...validateUsersGet(), async (req: UsersGetRequest, res) => {
 		const users = await usersService.getUsers({
 			filter: req.query["login-substring"],
 			limit: req.query.limit,
@@ -25,7 +25,7 @@ router.route("/")
 
 		res.json(users);
 	})
-	.post(...validateRootPathPost(), async (req: ValidRootPathPostRequest, res) => {
+	.post(...validateUsersPost(), async (req: UsersPostRequest, res) => {
 		const userID = await usersService.createUser(req.body);
 
 		res.status(201).json({
