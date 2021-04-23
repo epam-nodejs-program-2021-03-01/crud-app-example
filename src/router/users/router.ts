@@ -1,7 +1,8 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
-import UsersService, { UserNotFoundError } from "../../services/users.service";
+import UsersService from "../../services/users.service";
+import catchAsyncUserNotFoundError from "./catch-async-user-not-found-error";
 
 /** @private */
 const naturalNumber = /^\d+$/;
@@ -37,44 +38,20 @@ router.route("/")
 
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
-	.get(async (req, res, next) => {
+	.get(catchAsyncUserNotFoundError("get user", async (req, res) => {
 		const userID = req.params.id;
-
-		try {
-			const user = await usersService.getUser(userID);
-
-			res.json(user);
-		} catch (error: unknown) {
-			if (error instanceof UserNotFoundError)
-				return res.status(404).json({
-					error: "Could not get user",
-					reason: error.message,
-				});
-
-			// delegate unknown error to error handler
-			next(error);
-		}
-	})
+		const user = await usersService.getUser(userID);
+	
+		res.json(user);
+	}))
 	.patch(NOT_IMPLEMENTED, () => {
 		// TODO: update user
 	})
-	.delete(async (req, res, next) => {
+	.delete(catchAsyncUserNotFoundError("delete user", async (req, res) => {
 		const userID = req.params.id;
+		const user = await usersService.deleteUser(userID);
 
-		try {
-			const user = await usersService.deleteUser(userID);
-
-			res.status(202).json(user);
-		} catch (error: unknown) {
-			if (error instanceof UserNotFoundError)
-				return res.status(404).json({
-					error: "Could not delete user",
-					reason: error.message,
-				});
-
-			// delegate unknown error to error handler
-			next(error);
-		}
-	});
+		res.status(202).json(user);
+	}));
 
 export default router;
