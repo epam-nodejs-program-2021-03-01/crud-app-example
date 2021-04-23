@@ -30,7 +30,7 @@ router.route("/")
 
 		res.status(201).json({
 			userID,
-			createdAt: Date.now(),
+			createdAt: new Date().toJSON(),
 		});
 	});
 
