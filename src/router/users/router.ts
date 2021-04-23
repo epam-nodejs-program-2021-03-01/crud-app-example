@@ -3,9 +3,7 @@ import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
 import UsersService from "../../services/users.service";
 import handleAsyncErrors from "../handle-async-errors";
-
-/** @private */
-const naturalNumber = /^\d+$/;
+import validateQuery, { ValidRequest } from "./validate-query-root-path-get";
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501);
@@ -18,17 +16,11 @@ const router = Router();
 
 router.route("/")
 	.all(allowMethods("GET", "POST"))
-	// GET /users?login-substring=[…]&limit=[…]
-	.get(async (req, res) => {
-		const query = req.query as Record<string, string | undefined>; // don't try to understand it, – feel it
-		const filter = query["login-substring"];
-
-		let limit: number | undefined;
-
-		if (query.limit?.match(naturalNumber))
-			limit = parseInt(query.limit, 10);
-
-		const users = await usersService.getUsers({ filter, limit });
+	.get(validateQuery(), async (req: ValidRequest, res) => {
+		const users = await usersService.getUsers({
+			filter: req.query["login-substring"],
+			limit: req.query.limit,
+		});
 
 		res.json(users);
 	})
