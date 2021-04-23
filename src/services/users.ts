@@ -7,7 +7,7 @@ export interface User {
 }
 
 /** @public */
-const users: Record<string, User> = Object.create(null);
+const users = Object.create(null) as Record<string, User>;
 
 users["b874d5e6-3ffc-42b4-b06f-b3e929521c04"] = {
 	id: "b874d5e6-3ffc-42b4-b06f-b3e929521c04",

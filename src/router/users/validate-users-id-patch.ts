@@ -1,17 +1,13 @@
 import type { RequestHandler } from "express";
 import Joi from "joi";
-import { createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest } from "express-joi-validation";
+import { createValidator } from "express-joi-validation";
+import type DefineValidRequest from "../../typings/define-valid-request";
 
-/** @private */
-interface RequestSchema extends ValidatedRequestSchema {
-	[ContainerTypes.Body]: {
-		login: string;
-		password: string;
-		age: number;
-	};
-}
-
-export type ValidRequest = ValidatedRequest<RequestSchema>;
+export type ValidRequest = DefineValidRequest<"body", {
+	login: string;
+	password: string;
+	age: number;
+}>;
 
 export const props = {
 	login: Joi.string()

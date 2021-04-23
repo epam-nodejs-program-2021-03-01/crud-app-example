@@ -13,11 +13,24 @@ const publicUserKeys = [ "login", "password", "age" ] as const;
 /** @private */
 type PublicUserProps = Pick<User, (typeof publicUserKeys)[number]>;
 
+/** @private */
+// TypeScript weirdness
+function hasKey<
+	Obj extends Record<string, unknown>,
+	Key extends keyof Obj,
+>(
+	key: Key,
+	obj: Partial<Obj>,
+): obj is Partial<Obj> & { [K in Key]: Obj[K] } {
+	return key in obj;
+}
+
 export default class UsersService {
-	createID() {
+	createID(): string {
 		return uuid.v4();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async getUsers({ filter = "", limit }: GetUsersQuery = {}): Promise<User[]> {
 		let values = Object.values(users);
 
@@ -32,6 +45,7 @@ export default class UsersService {
 		return values.filter((user) => !user.isDeleted);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async createUser(props: PublicUserProps): Promise<string> {
 		const id = this.createID();
 		const user = { ...props, id };
@@ -41,6 +55,7 @@ export default class UsersService {
 		return id;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async getUser(id: string): Promise<User> {
 		const user = users[id] as User | undefined;
 
@@ -54,15 +69,16 @@ export default class UsersService {
 		const user = await this.getUser(id);
 
 		for (const key of publicUserKeys)
-			if (key in props) {
+			if (hasKey(key, props))
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore I don't know how to fix this error
 				user[key] =
-					props[key]!;
-			}
+					props[key];
 
 		return user;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async deleteUser(id: string): Promise<User> {
 		if (id in users === false)
 			throw new UserNotFoundError(id);

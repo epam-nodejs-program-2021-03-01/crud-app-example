@@ -1,16 +1,12 @@
 import type { RequestHandler } from "express";
 import Joi from "joi";
-import { createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest } from "express-joi-validation";
+import { createValidator } from "express-joi-validation";
+import type DefineValidRequest from "../../typings/define-valid-request";
 
-/** @private */
-interface RequestSchema extends ValidatedRequestSchema {
-	[ContainerTypes.Query]: {
-		"login-substring"?: string;
-		limit?: number;
-	};
-}
-
-export type ValidRequest = ValidatedRequest<RequestSchema>;
+export type ValidRequest = DefineValidRequest<"query", {
+	"login-substring"?: string;
+	limit?: number;
+}>;
 
 /** @private */
 // Validate req.query for "GET /users" requests
