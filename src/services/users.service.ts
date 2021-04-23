@@ -8,7 +8,10 @@ interface GetUsersQuery {
 }
 
 /** @private */
-type CreateUserProps = Pick<User, "login" | "password" | "age">;
+const publicUserKeys = [ "login", "password", "age" ] as const;
+
+/** @private */
+type PublicUserProps = Pick<User, (typeof publicUserKeys)[number]>;
 
 export default class UsersService {
 	createID() {
@@ -29,7 +32,7 @@ export default class UsersService {
 		return values.filter((user) => !user.isDeleted);
 	}
 
-	async createUser(props: CreateUserProps): Promise<string> {
+	async createUser(props: PublicUserProps): Promise<string> {
 		const id = this.createID();
 		const user = { ...props, id };
 
@@ -43,6 +46,19 @@ export default class UsersService {
 
 		if (user == null || user.isDeleted)
 			throw new UserNotFoundError(id);
+
+		return user;
+	}
+
+	async updateUser(id: string, props: Partial<PublicUserProps>): Promise<User> {
+		const user = await this.getUser(id);
+
+		for (const key of publicUserKeys)
+			if (key in props) {
+				// @ts-ignore I don't know how to fix this error
+				user[key] =
+					props[key]!;
+			}
 
 		return user;
 	}

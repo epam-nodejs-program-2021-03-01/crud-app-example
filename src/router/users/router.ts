@@ -1,13 +1,10 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
-import sendStatus from "../../middlewares/send-status";
 import UsersService from "../../services/users.service";
 import handleAsyncErrors from "../handle-async-errors";
 import validateUsersGet, { ValidRequest as UsersGetRequest } from "./validate-users-get";
 import validateUsersPost, { ValidRequest as UsersPostRequest } from "./validate-users-post";
-
-/** @private */
-const NOT_IMPLEMENTED = sendStatus(501);
+import validateUsersIdPatch, { ValidRequest as UsersIdPatchRequest } from "./validate-users-id-patch";
 
 /** @private */
 const usersService = new UsersService();
@@ -42,9 +39,15 @@ router.route("/:id")
 	
 		res.json(user);
 	}))
-	.patch(NOT_IMPLEMENTED, () => {
-		// TODO: update user
-	})
+	.patch(
+		...validateUsersIdPatch(),
+		handleAsyncErrors("update user", async (req: UsersIdPatchRequest, res) => {
+			const userID = req.params.id;
+			const user = await usersService.updateUser(userID, req.body);
+
+			res.json(user);
+		},
+	))
 	.delete(handleAsyncErrors("delete user", async (req, res) => {
 		const userID = req.params.id;
 		const user = await usersService.deleteUser(userID);
