@@ -1,3 +1,4 @@
+import * as uuid from "uuid";
 import users, { User } from "./users";
 
 /** @private */
@@ -6,7 +7,14 @@ interface GetUsersQuery {
 	limit?: number;
 }
 
+/** @private */
+type CreateUserProps = Pick<User, "login" | "password" | "age">;
+
 export default class UsersService {
+	createID() {
+		return uuid.v4();
+	}
+
 	async getUsers({ filter = "", limit }: GetUsersQuery = {}): Promise<User[]> {
 		let values = Object.values(users);
 
@@ -19,6 +27,15 @@ export default class UsersService {
 			values.length = limit;
 
 		return values.filter((user) => !user.isDeleted);
+	}
+
+	async createUser(props: CreateUserProps): Promise<string> {
+		const id = this.createID();
+		const user = { ...props, id };
+
+		users[id] = user;
+
+		return id;
 	}
 
 	async getUser(id: string): Promise<User> {
