@@ -8,7 +8,7 @@ interface FindQuery {
 	limit?: number;
 }
 
-export default class UsersService {
+export default class UserService {
 	private async getRecord(id: string): Promise<UserModel> {
 		const record = await UserModel.findOne({
 			where: {
