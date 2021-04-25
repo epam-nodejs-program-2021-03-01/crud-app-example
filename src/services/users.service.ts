@@ -3,13 +3,13 @@ import type { PickNonEntity } from "../db/entity.type";
 import UserModel, { User, UserPublic } from "../db/models/user";
 
 /** @private */
-interface GetUsersQuery {
+interface FindQuery {
 	filter?: string;
 	limit?: number;
 }
 
 export default class UsersService {
-	private async getUserRecord(id: string): Promise<UserModel> {
+	private async getRecord(id: string): Promise<UserModel> {
 		const record = await UserModel.findOne({
 			where: {
 				id,
@@ -23,15 +23,15 @@ export default class UsersService {
 		return record;
 	}
 
-	private async updateUserAnyProps(id: string, props: PickNonEntity<User>): Promise<User> {
-		const record = await this.getUserRecord(id);
+	private async updateAnyProps(id: string, props: PickNonEntity<User>): Promise<User> {
+		const record = await this.getRecord(id);
 
 		await record.update(props);
 
 		return record.get();
 	}
 
-	async getUsers({ filter = "", limit }: GetUsersQuery = {}): Promise<User[]> {
+	async find({ filter = "", limit }: FindQuery = {}): Promise<User[]> {
 		const records = await UserModel.findAll({
 			where: {
 				login: {
@@ -46,24 +46,24 @@ export default class UsersService {
 		return records.map((record) => record.get());
 	}
 
-	async createUser(props: UserPublic): Promise<string> {
+	async create(props: UserPublic): Promise<string> {
 		const record = await UserModel.create(props);
 
 		return record.getDataValue("id");
 	}
 
-	async getUser(id: string): Promise<User> {
-		const record = await this.getUserRecord(id);
+	async get(id: string): Promise<User> {
+		const record = await this.getRecord(id);
 
 		return record.get();
 	}
 
-	async updateUser(id: string, props: Partial<UserPublic>): Promise<User> {
-		return this.updateUserAnyProps(id, props);
+	async update(id: string, props: Partial<UserPublic>): Promise<User> {
+		return this.updateAnyProps(id, props);
 	}
 
-	async deleteUser(id: string): Promise<User> {
-		return this.updateUserAnyProps(id, { isDeleted: true });
+	async delete(id: string): Promise<User> {
+		return this.updateAnyProps(id, { isDeleted: true });
 	}
 }
 

@@ -15,7 +15,7 @@ const router = Router();
 router.route("/")
 	.all(allowMethods("GET", "POST"))
 	.get(...validateUsersGet(), async (req: UsersGetRequest, res) => {
-		const users = await usersService.getUsers({
+		const users = await usersService.find({
 			filter: req.query["login-substring"],
 			limit: req.query.limit,
 		});
@@ -23,7 +23,7 @@ router.route("/")
 		res.json(users);
 	})
 	.post(...validateUsersPost(), async (req: UsersPostRequest, res) => {
-		const userID = await usersService.createUser(req.body);
+		const userID = await usersService.create(req.body);
 
 		res.status(201).json({
 			userID,
@@ -35,7 +35,7 @@ router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
 	.get(handleAsyncErrors("get user", async (req, res) => {
 		const userID = req.params.id;
-		const user = await usersService.getUser(userID);
+		const user = await usersService.get(userID);
 	
 		res.json(user);
 	}))
@@ -43,14 +43,14 @@ router.route("/:id")
 		...validateUsersIdPatch(),
 		handleAsyncErrors("update user", async (req: UsersIdPatchRequest, res) => {
 			const userID = req.params.id;
-			const user = await usersService.updateUser(userID, req.body);
+			const user = await usersService.update(userID, req.body);
 
 			res.json(user);
 		},
 	))
 	.delete(handleAsyncErrors("delete user", async (req, res) => {
 		const userID = req.params.id;
-		const user = await usersService.deleteUser(userID);
+		const user = await usersService.delete(userID);
 
 		res.status(202).json(user);
 	}));
