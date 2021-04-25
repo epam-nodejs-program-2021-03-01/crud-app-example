@@ -3,7 +3,4 @@
 	"include": [
 		"src",
 	],
-	"compilerOptions": {
-		"allowJs": false,
-	},
 }
