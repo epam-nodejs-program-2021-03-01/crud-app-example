@@ -9,6 +9,7 @@ router.route("/")
 		res.json({
 			message: "💪",
 			healthy: true,
+			version: process.env.HEROKU_SLUG_COMMIT,
 		});
 	});
 

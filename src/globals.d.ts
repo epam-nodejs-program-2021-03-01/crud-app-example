@@ -5,6 +5,7 @@ declare global {
 		interface ProcessEnv {
 			readonly NODE_ENV: string;
 			readonly PORT: string;
+			readonly HEROKU_SLUG_COMMIT: string;
 		}
 	}
 }
