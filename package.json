@@ -21,7 +21,7 @@
     "prebuild": "npm run clean",
     "build": "tsc --project ./tsconfig.production.json",
     "lint": "eslint --ext .js,.ts src",
-    "start": "node dist/index.js",
+    "start": "node --require ./env/production.js dist/index.js",
     "dev": "nodemon --ext json,ts --require ./env/development.ts src/index.ts"
   },
   "devDependencies": {
