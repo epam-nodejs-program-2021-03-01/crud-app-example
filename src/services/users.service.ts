@@ -1,5 +1,6 @@
-import * as uuid from "uuid";
-import users, { User } from "./users";
+import { Op } from "sequelize";
+import type { PickNonEntity } from "../db/entity.type";
+import UserModel, { User, UserPublic } from "../db/models/user";
 
 /** @private */
 interface GetUsersQuery {
@@ -7,87 +8,62 @@ interface GetUsersQuery {
 	limit?: number;
 }
 
-/** @private */
-const publicUserKeys = [ "login", "password", "age" ] as const;
-
-/** @private */
-type PublicUserProps = Pick<User, (typeof publicUserKeys)[number]>;
-
-/** @private */
-// TypeScript weirdness
-function hasKey<
-	Obj extends Record<string, unknown>,
-	Key extends keyof Obj,
->(
-	key: Key,
-	obj: Partial<Obj>,
-): obj is Partial<Obj> & { [K in Key]: Obj[K] } {
-	return key in obj;
-}
-
 export default class UsersService {
-	createID(): string {
-		return uuid.v4();
+	private async getUserRecord(id: string): Promise<UserModel> {
+		const record = await UserModel.findOne({
+			where: {
+				id,
+				isDeleted: false,
+			},
+		});
+
+		if (record == null)
+			throw new UserNotFoundError(id);
+
+		return record;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
+	private async updateUserAnyProps(id: string, props: PickNonEntity<User>): Promise<User> {
+		const record = await this.getUserRecord(id);
+
+		await record.update(props);
+
+		return record.get();
+	}
+
 	async getUsers({ filter = "", limit }: GetUsersQuery = {}): Promise<User[]> {
-		let values = Object.values(users);
+		const records = await UserModel.findAll({
+			where: {
+				login: {
+					[Op.like]: `%${filter}%`,
+				},
+				isDeleted: "false",
+			},
+			order: [['login', 'ASC']],
+			limit,
+		});
 
-		if (filter)
-			values = values.filter((user) => user.login.includes(filter));
-
-		values.sort((a, b) => a.login.localeCompare(b.login));
-
-		if (limit != null)
-			values.length = limit;
-
-		return values.filter((user) => !user.isDeleted);
+		return records.map((record) => record.get());
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async createUser(props: PublicUserProps): Promise<string> {
-		const id = this.createID();
-		const user = { ...props, id };
+	async createUser(props: UserPublic): Promise<string> {
+		const record = await UserModel.create(props);
 
-		users[id] = user;
-
-		return id;
+		return record.getDataValue("id");
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	async getUser(id: string): Promise<User> {
-		const user = users[id] as User | undefined;
+		const record = await this.getUserRecord(id);
 
-		if (user == null || user.isDeleted)
-			throw new UserNotFoundError(id);
-
-		return user;
+		return record.get();
 	}
 
-	async updateUser(id: string, props: Partial<PublicUserProps>): Promise<User> {
-		const user = await this.getUser(id);
-
-		for (const key of publicUserKeys)
-			if (hasKey(key, props))
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore I don't know how to fix this error
-				user[key] =
-					props[key];
-
-		return user;
+	async updateUser(id: string, props: Partial<UserPublic>): Promise<User> {
+		return this.updateUserAnyProps(id, props);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	async deleteUser(id: string): Promise<User> {
-		if (id in users === false)
-			throw new UserNotFoundError(id);
-
-		const user = users[id];
-
-		user.isDeleted = true; // soft delete
-
-		return user;
+		return this.updateUserAnyProps(id, { isDeleted: true });
 	}
 }
 
