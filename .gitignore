@@ -1,3 +1,9 @@
+# Custom
+src/playground.ts
+.vscode/settings.json
+
+# ***
+
 # Logs
 logs
 *.log

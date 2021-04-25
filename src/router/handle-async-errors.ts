@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { UserNotFoundError } from "../services/users.service";
+import { UserNotFoundError } from "../services/user.service";
 
 /** @private */
 // this helps reducing line length
