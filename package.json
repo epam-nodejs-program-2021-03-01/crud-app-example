@@ -20,6 +20,7 @@
     "clean": "del-cli dist/*",
     "prebuild": "npm run clean",
     "build": "tsc --project ./tsconfig.production.json",
+    "postbuild": "del-cli dist/**/*.type.js* dist/typings",
     "lint": "eslint --ext .js,.ts src",
     "start": "node --require ./env/production.js dist/index.js",
     "dev": "nodemon --ext json,ts --require ./env/development.ts src/index.ts",
