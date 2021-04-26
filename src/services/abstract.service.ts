@@ -26,4 +26,10 @@ abstract class Service<
 	abstract delete(id: string): Promise<ValueType>;
 }
 
+/** @public */
+namespace Service {
+	export class ValueNotFoundError extends Error {
+	}
+}
+
 export default Service;

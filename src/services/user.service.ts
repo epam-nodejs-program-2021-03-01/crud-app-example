@@ -68,7 +68,7 @@ export default class UserService extends Service<User> {
 	}
 }
 
-export class UserNotFoundError extends Error {
+export class UserNotFoundError extends Service.ValueNotFoundError {
 	constructor(userID: string) {
 		super(`User "${userID}" was not found`);
 	}
