@@ -25,6 +25,7 @@
     "FIXME:": "change ./env/common to ./env/production",
     "start": "node --require ./env/common.js dist/index.js",
     "dev": "nodemon --ext json,ts --require ./env/development.ts src/index.ts",
+    "preplay": "touch src/playground.ts",
     "play": "nodemon --ext json,ts --require ./env/development.ts src/playground.ts"
   },
   "devDependencies": {
