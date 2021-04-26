@@ -1,5 +1,4 @@
 import { Op } from "sequelize";
-import type Entity from "../typings/db/entity";
 import User, { UserType, UserTypeRequired } from "../db/models/user";
 import Service from "./abstract.service";
 
@@ -7,9 +6,6 @@ import Service from "./abstract.service";
 interface FindQuery extends Service.FindQuery {
 	filter?: string;
 }
-
-/** @private */
-type AnyProps = Omit<UserType, keyof Entity>;
 
 export default class UserService extends Service<User> {
 	protected async getRecord(id: string): Promise<User> {
@@ -26,7 +22,7 @@ export default class UserService extends Service<User> {
 		return record;
 	}
 
-	protected async updateAnyProps(id: string, props: Partial<AnyProps>): Promise<User> {
+	protected async updateAnyProps(id: string, props: Service.AnyProps<UserType>): Promise<User> {
 		const record = await this.getRecord(id);
 
 		return record.update(props);

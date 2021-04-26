@@ -6,6 +6,8 @@ namespace Service {
 	export interface FindQuery {
 		limit?: number;
 	}
+
+	export type AnyProps<Value> = Partial<Omit<Value, keyof Entity>>;
 }
 
 /** @public */
@@ -15,7 +17,7 @@ abstract class Service<
 	ValueTypeCreation = M["_creationAttributes"],
 > {
 	protected abstract getRecord(id: string): Promise<M>;
-	protected abstract updateAnyProps(id: string, props: Partial<Omit<ValueType, keyof Entity>>): Promise<M>;
+	protected abstract updateAnyProps(id: string, props: Service.AnyProps<ValueType>): Promise<M>;
 
 	abstract find(query?: Service.FindQuery): Promise<ValueType[]>;
 	abstract create(props: ValueTypeCreation): Promise<ValueType>;
