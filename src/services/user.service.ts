@@ -1,24 +1,18 @@
 import { Op } from "sequelize";
 import type Entity from "../typings/db/entity";
 import User, { UserType, UserTypeRequired } from "../db/models/user";
+import Service from "./abstract.service";
 
 /** @private */
-interface FindQuery {
+interface FindQuery extends Service.FindQuery {
 	filter?: string;
-	limit?: number;
-}
-
-/** @private */
-interface CreateUserResult {
-	id: string;
-	createdAt: string;
 }
 
 /** @private */
 type AnyProps = Omit<UserType, keyof Entity>;
 
-export default class UserService {
-	private async getRecord(id: string): Promise<User> {
+export default class UserService extends Service<UserType, UserTypeRequired> {
+	protected async getRecord(id: string): Promise<User> {
 		const record = await User.findOne({
 			where: {
 				id,
@@ -32,12 +26,10 @@ export default class UserService {
 		return record;
 	}
 
-	private async updateAnyProps(id: string, props: Partial<AnyProps>): Promise<UserType> {
+	protected async updateAnyProps(id: string, props: Partial<AnyProps>): Promise<User> {
 		const record = await this.getRecord(id);
 
-		await record.update(props);
-
-		return record.get();
+		return record.update(props);
 	}
 
 	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
@@ -55,12 +47,10 @@ export default class UserService {
 		return records.map((record) => record.get());
 	}
 
-	async create(props: UserTypeRequired): Promise<CreateUserResult> {
+	async create(props: UserTypeRequired): Promise<UserType> {
 		const record = await User.create(props);
 
-		const { id, createdAt } = record.get();
-
-		return { id, createdAt };
+		return record.get();
 	}
 
 	async get(id: string): Promise<UserType> {
@@ -70,11 +60,15 @@ export default class UserService {
 	}
 
 	async update(id: string, props: Partial<UserTypeRequired>): Promise<UserType> {
-		return this.updateAnyProps(id, props);
+		const record = await this.updateAnyProps(id, props);
+
+		return record.get();
 	}
 
 	async delete(id: string): Promise<UserType> {
-		return this.updateAnyProps(id, { isDeleted: true });
+		const record = await this.updateAnyProps(id, { isDeleted: true });
+
+		return record.get();
 	}
 }
 
