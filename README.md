@@ -2,7 +2,7 @@
 
 ## Environments:
 
-Notice that any push to non-development environment branch automatically triggers deploy to that environment, as in `git push staging main` deploys to staging.
+Notice that any push to non-development environment branch automatically triggers deploy to that environment, as in `git push prod main` deploys to production environment.
 
 ### 🔴 Production
 
@@ -18,7 +18,7 @@ Notice that any push to non-development environment branch automatically trigger
 ### 🟡 Staging
 
 - Link: https://epam-crud-app-example-staging.herokuapp.com/
-- Branch: `staging`
+- Branch: `develop`
 - Git link: https://git.heroku.com/epam-crud-app-example-staging.git
 - Git remote: `staging`
 
