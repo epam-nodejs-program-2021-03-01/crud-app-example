@@ -23,11 +23,11 @@ router.route("/")
 		res.json(users);
 	})
 	.post(...validateUsersPost(), async (req: UsersPostRequest, res) => {
-		const userID = await userService.create(req.body);
+		const { id: userID, createdAt } = await userService.create(req.body);
 
 		res.status(201).json({
 			userID,
-			createdAt: new Date().toJSON(),
+			createdAt,
 		});
 	});
 

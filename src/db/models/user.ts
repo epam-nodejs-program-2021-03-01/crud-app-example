@@ -1,4 +1,5 @@
-import type Entity from "../entity.type";
+import type Entity from "../../typings/db/entity";
+import type { ImplyTimestamps } from "../../typings/db/with-timestamps.type";
 import client, { Model, DataTypes } from "../client";
 
 export interface UserTypeRequired {
@@ -15,7 +16,7 @@ export class User extends Model<UserType, UserTypeRequired> {}
 
 export default User;
 
-User.init({
+User.init<ImplyTimestamps<User>>({
 	id: {
 		type: DataTypes.BIGINT,
 		primaryKey: true,
