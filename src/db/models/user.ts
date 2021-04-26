@@ -1,17 +1,17 @@
 import type Entity from "../entity.type";
 import client, { Model, DataTypes } from "../client";
 
-export interface UserTypePublic {
+export interface UserTypeRequired {
 	login: string;
 	password: string;
 	age: number;
 }
 
-export interface UserType extends Entity, UserTypePublic {
+export interface UserType extends Entity, UserTypeRequired {
 	isDeleted?: boolean;
 }
 
-export class User extends Model<UserType, UserTypePublic> {}
+export class User extends Model<UserType, UserTypeRequired> {}
 
 export default User;
 
@@ -45,5 +45,5 @@ User.init({
 });
 
 (async () => {
-	await User.sync();
+	await User.sync<User>();
 })();

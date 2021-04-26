@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
-import type { PickNonEntity } from "../db/entity.type";
-import User, { UserType, UserTypePublic } from "../db/models/user";
+import type { OmitEntity } from "../db/entity.type";
+import User, { UserType, UserTypeRequired } from "../db/models/user";
 
 /** @private */
 interface FindQuery {
@@ -23,7 +23,7 @@ export default class UserService {
 		return record;
 	}
 
-	private async updateAnyProps(id: string, props: PickNonEntity<UserType>): Promise<UserType> {
+	private async updateAnyProps(id: string, props: OmitEntity<UserType>): Promise<UserType> {
 		const record = await this.getRecord(id);
 
 		await record.update(props);
@@ -46,7 +46,7 @@ export default class UserService {
 		return records.map((record) => record.get());
 	}
 
-	async create(props: UserTypePublic): Promise<string> {
+	async create(props: UserTypeRequired): Promise<string> {
 		const record = await User.create(props);
 
 		return record.getDataValue("id");
@@ -58,7 +58,7 @@ export default class UserService {
 		return record.get();
 	}
 
-	async update(id: string, props: Partial<UserTypePublic>): Promise<UserType> {
+	async update(id: string, props: Partial<UserTypeRequired>): Promise<UserType> {
 		return this.updateAnyProps(id, props);
 	}
 
