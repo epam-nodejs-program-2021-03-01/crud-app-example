@@ -41,6 +41,7 @@ UserModel.init({
 	},
 }, {
 	sequelize: client,
+	tableName: "Users",
 });
 
 (async () => {
