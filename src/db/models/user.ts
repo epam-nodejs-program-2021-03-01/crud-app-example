@@ -1,21 +1,21 @@
 import type Entity from "../entity.type";
 import client, { Model, DataTypes } from "../client";
 
-export interface UserPublic {
+export interface UserTypePublic {
 	login: string;
 	password: string;
 	age: number;
 }
 
-export interface User extends Entity, UserPublic {
+export interface UserType extends Entity, UserTypePublic {
 	isDeleted?: boolean;
 }
 
-export class UserModel extends Model<User, UserPublic> {}
+export class User extends Model<UserType, UserTypePublic> {}
 
-export default UserModel;
+export default User;
 
-UserModel.init({
+User.init({
 	id: {
 		type: DataTypes.BIGINT,
 		primaryKey: true,
@@ -45,5 +45,5 @@ UserModel.init({
 });
 
 (async () => {
-	await UserModel.sync();
+	await User.sync();
 })();
