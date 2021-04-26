@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import type { OmitEntity } from "../db/entity.type";
+import type Entity from "../typings/db/entity";
 import User, { UserType, UserTypeRequired } from "../db/models/user";
 
 /** @private */
@@ -7,6 +7,15 @@ interface FindQuery {
 	filter?: string;
 	limit?: number;
 }
+
+/** @private */
+interface CreateUserResult {
+	id: string;
+	createdAt: string;
+}
+
+/** @private */
+type AnyProps = Omit<UserType, keyof Entity>;
 
 export default class UserService {
 	private async getRecord(id: string): Promise<User> {
@@ -23,7 +32,7 @@ export default class UserService {
 		return record;
 	}
 
-	private async updateAnyProps(id: string, props: OmitEntity<UserType>): Promise<UserType> {
+	private async updateAnyProps(id: string, props: Partial<AnyProps>): Promise<UserType> {
 		const record = await this.getRecord(id);
 
 		await record.update(props);
@@ -46,10 +55,12 @@ export default class UserService {
 		return records.map((record) => record.get());
 	}
 
-	async create(props: UserTypeRequired): Promise<string> {
+	async create(props: UserTypeRequired): Promise<CreateUserResult> {
 		const record = await User.create(props);
 
-		return record.getDataValue("id");
+		const { id, createdAt } = record.get();
+
+		return { id, createdAt };
 	}
 
 	async get(id: string): Promise<UserType> {
