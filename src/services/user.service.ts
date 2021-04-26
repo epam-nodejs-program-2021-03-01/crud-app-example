@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
-import type { PickNonEntity } from "../db/entity.type";
-import UserModel, { User, UserPublic } from "../db/models/user";
+import type { OmitEntity } from "../db/entity.type";
+import User, { UserType, UserTypeRequired } from "../db/models/user";
 
 /** @private */
 interface FindQuery {
@@ -9,8 +9,8 @@ interface FindQuery {
 }
 
 export default class UserService {
-	private async getRecord(id: string): Promise<UserModel> {
-		const record = await UserModel.findOne({
+	private async getRecord(id: string): Promise<User> {
+		const record = await User.findOne({
 			where: {
 				id,
 				isDeleted: false,
@@ -23,7 +23,7 @@ export default class UserService {
 		return record;
 	}
 
-	private async updateAnyProps(id: string, props: PickNonEntity<User>): Promise<User> {
+	private async updateAnyProps(id: string, props: OmitEntity<UserType>): Promise<UserType> {
 		const record = await this.getRecord(id);
 
 		await record.update(props);
@@ -31,8 +31,8 @@ export default class UserService {
 		return record.get();
 	}
 
-	async find({ filter = "", limit }: FindQuery = {}): Promise<User[]> {
-		const records = await UserModel.findAll({
+	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
+		const records = await User.findAll({
 			where: {
 				login: {
 					[Op.like]: `%${filter}%`,
@@ -46,23 +46,23 @@ export default class UserService {
 		return records.map((record) => record.get());
 	}
 
-	async create(props: UserPublic): Promise<string> {
-		const record = await UserModel.create(props);
+	async create(props: UserTypeRequired): Promise<string> {
+		const record = await User.create(props);
 
 		return record.getDataValue("id");
 	}
 
-	async get(id: string): Promise<User> {
+	async get(id: string): Promise<UserType> {
 		const record = await this.getRecord(id);
 
 		return record.get();
 	}
 
-	async update(id: string, props: Partial<UserPublic>): Promise<User> {
+	async update(id: string, props: Partial<UserTypeRequired>): Promise<UserType> {
 		return this.updateAnyProps(id, props);
 	}
 
-	async delete(id: string): Promise<User> {
+	async delete(id: string): Promise<UserType> {
 		return this.updateAnyProps(id, { isDeleted: true });
 	}
 }
