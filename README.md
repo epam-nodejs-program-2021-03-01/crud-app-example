@@ -38,3 +38,12 @@ Notice that any push to non-development environment branch automatically trigger
 	```sh
 	git remote add origin https://github.com/epam-nodejs-program-2021-03-01/crud-app-example.git
 	```
+
+### 🟢 Playground
+
+> The `src/playground.ts` file on local development machine. Run with `npm run play` script.
+
+- Link: _(localhost)_
+- Branch: _(N/A)_
+- Git link: _(N/A)_
+- Git remote: _(N/A)_
