@@ -10,7 +10,5 @@ export default interface WithTimestamps {
  * skipping explicit validation for the `createdAt` and `updatedAt` properties of the model,
  * because, frankly, this should be done by Sequelize itself somewhere under the hood 🤷‍♀️
  */
-export type ImplyTimestamps<
-	M extends Model,
-> =
+export type ImplyTimestamps<M extends Model> =
 	Model<Omit<M["_attributes"], keyof WithTimestamps>, M["_creationAttributes"]>
