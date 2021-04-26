@@ -4,6 +4,6 @@ import { options } from "./common";
 
 load({
 	...options,
-	path: resolve(__dirname, ".env.development"),
+	path: resolve(__dirname, ".env.local"),
 	silent: false,
 });

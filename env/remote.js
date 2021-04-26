@@ -1,5 +1,5 @@
-// Production environment variables are set up via Heroku application settings
-//   https://dashboard.heroku.com/apps/shrouded-bayou-97400/settings
+// Environment variables are set up via Heroku application settings
+//   https://dashboard.heroku.com/apps/{APP_ID}/settings
 
 "use strict";
 
@@ -10,5 +10,5 @@ const { options } = require("./common");
 
 env.load({
 	...options,
-	path: path.resolve(__dirname, ".env.production"),
+	path: path.resolve(__dirname, ".env.remote"),
 });
