@@ -13,16 +13,32 @@ namespace Service {
 /** @public */
 abstract class Service<
 	M extends Model,
-	ValueType = M["_attributes"],
-	ValueTypeCreation = M["_creationAttributes"],
+	ValueType extends ValueTypeCreation = M["_attributes"],
+	ValueTypeCreation extends Record<PropertyKey, unknown> = M["_creationAttributes"],
 > {
 	protected abstract getRecord(id: string): Promise<M>;
-	protected abstract updateAnyProps(id: string, props: Service.AnyProps<ValueType>): Promise<M>;
+
+	protected async updateAnyProps(id: string, props: Service.AnyProps<ValueType>): Promise<M> {
+		const record = await this.getRecord(id);
+
+		return record.update(props);
+	}
 
 	abstract find(query?: Service.FindQuery): Promise<ValueType[]>;
 	abstract create(props: ValueTypeCreation): Promise<ValueType>;
-	abstract get(id: string): Promise<ValueType>;
-	abstract update(id: string, props: Partial<ValueTypeCreation>): Promise<ValueType>;
+
+	async get(id: string): Promise<ValueType> {
+		const record = await this.getRecord(id);
+
+		return record.get();
+	}
+
+	async update(id: string, props: Partial<ValueTypeCreation>): Promise<ValueType> {
+		const record = await this.updateAnyProps(id, props as Partial<ValueType>);
+
+		return record.get();
+	}
+
 	abstract delete(id: string): Promise<ValueType>;
 }
 

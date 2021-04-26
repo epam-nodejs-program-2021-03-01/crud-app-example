@@ -22,12 +22,6 @@ export default class UserService extends Service<User> {
 		return record;
 	}
 
-	protected async updateAnyProps(id: string, props: Service.AnyProps<UserType>): Promise<User> {
-		const record = await this.getRecord(id);
-
-		return record.update(props);
-	}
-
 	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
 		const records = await User.findAll({
 			where: {
@@ -45,18 +39,6 @@ export default class UserService extends Service<User> {
 
 	async create(props: UserTypeRequired): Promise<UserType> {
 		const record = await User.create(props);
-
-		return record.get();
-	}
-
-	async get(id: string): Promise<UserType> {
-		const record = await this.getRecord(id);
-
-		return record.get();
-	}
-
-	async update(id: string, props: Partial<UserTypeRequired>): Promise<UserType> {
-		const record = await this.updateAnyProps(id, props);
 
 		return record.get();
 	}
