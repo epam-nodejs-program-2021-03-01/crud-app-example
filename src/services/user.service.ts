@@ -11,7 +11,7 @@ interface FindQuery extends Service.FindQuery {
 /** @private */
 type AnyProps = Omit<UserType, keyof Entity>;
 
-export default class UserService extends Service<UserType, UserTypeRequired> {
+export default class UserService extends Service<User> {
 	protected async getRecord(id: string): Promise<User> {
 		const record = await User.findOne({
 			where: {

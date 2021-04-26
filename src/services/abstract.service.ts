@@ -10,9 +10,9 @@ namespace Service {
 
 /** @public */
 abstract class Service<
-	ValueType extends Entity,
-	ValueTypeCreation extends object, // eslint-disable-line @typescript-eslint/ban-types
-	M extends Model<ValueType, ValueTypeCreation> = Model<ValueType, ValueTypeCreation>,
+	M extends Model,
+	ValueType = M["_attributes"],
+	ValueTypeCreation = M["_creationAttributes"],
 > {
 	protected abstract getRecord(id: string): Promise<M>;
 	protected abstract updateAnyProps(id: string, props: Partial<Omit<ValueType, keyof Entity>>): Promise<M>;
