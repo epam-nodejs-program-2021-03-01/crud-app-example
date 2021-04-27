@@ -9,9 +9,7 @@ interface FindQuery extends Service.FindQuery {
 
 export default class GroupService extends Service<Group> {
 	protected async getRecord(id: string): Promise<Group> {
-		const record = await Group.findOne({
-			where: { id },
-		});
+		const record = await Group.findByPk(id);
 
 		if (record == null)
 			throw new GroupNotFoundError(id);
