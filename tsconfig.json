@@ -14,6 +14,7 @@
 		// Development
 		"checkJs": true,
 		"strict": true,
+		"noUnusedLocals": true,
 		"downlevelIteration": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
