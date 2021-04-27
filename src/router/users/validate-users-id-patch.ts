@@ -2,12 +2,9 @@ import type { RequestHandler } from "express";
 import Joi from "joi";
 import { createValidator } from "express-joi-validation";
 import type DefineValidRequest from "../../typings/define-valid-request";
+import type { UserTypeRequired } from "../../db/models/user";
 
-export type ValidRequest = DefineValidRequest<"body", {
-	login: string;
-	password: string;
-	age: number;
-}>;
+export type ValidRequest = DefineValidRequest<"body", UserTypeRequired>;
 
 export const props = {
 	login: Joi.string()

@@ -6,7 +6,8 @@ type ValidationType = "body" | "query" | "params";
 /** @public */
 type DefineValidRequest<
 	Type extends ValidationType,
-	Props extends Record<string, unknown>,
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	Props extends object,
 > = Request & {
 	[T in Type]: Record<string, unknown> & Props;
 };
