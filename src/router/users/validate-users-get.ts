@@ -3,7 +3,7 @@ import Joi from "joi";
 import { createValidator } from "express-joi-validation";
 import type DefineValidRequest from "../../typings/define-valid-request";
 
-export type ValidRequest = DefineValidRequest<"query", {
+export type ValidRequest = DefineValidRequest<unknown, {
 	"login-substring"?: string;
 	limit?: number;
 }>;
