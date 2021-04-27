@@ -35,8 +35,11 @@ router.route("/:id")
 	.patch(NOT_IMPLEMENTED, () => {
 		// update group by ID
 	})
-	.delete(NOT_IMPLEMENTED, () => {
-		// delete group by ID
-	});
+	.delete(handleAsyncErrors("delete group", async (req, res) => {
+		const groupID = req.params.id;
+		const group = await groupService.delete(groupID);
+
+		res.json(group);
+	}));
 
 export default router;
