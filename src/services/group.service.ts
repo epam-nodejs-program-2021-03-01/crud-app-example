@@ -39,7 +39,7 @@ export default class GroupService extends Service<Group> {
 	async delete(id: string): Promise<GroupType> {
 		const record = await this.getRecord(id);
 
-		await Group.destroy({ where: { id } });
+		await record.destroy();
 
 		return record.get();
 	}
