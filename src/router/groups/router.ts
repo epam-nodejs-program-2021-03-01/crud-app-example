@@ -1,20 +1,25 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
+import GroupService from "../../services/group.service";
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501); // TODO: delete
+
+/** @private */
+const groupService = new GroupService();
 
 /** @public */
 const router = Router();
 
 router.route("/")
 	.all(allowMethods("GET", "POST"))
-	.all(NOT_IMPLEMENTED)
-	.get(() => {
-		// get all groups
+	.get(async (req, res) => {
+		const groups = await groupService.find();
+
+		res.json(groups);
 	})
-	.post(() => {
+	.post(NOT_IMPLEMENTED, () => {
 		// create new group
 	});
 
