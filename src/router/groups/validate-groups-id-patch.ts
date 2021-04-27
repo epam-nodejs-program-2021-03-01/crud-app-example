@@ -14,7 +14,7 @@ export const props = {
 
 	permissions: Joi.array().items(
 		Joi.string()
-			.allow(...permissions)
+			.valid(...permissions)
 	),
 } as const;
 
