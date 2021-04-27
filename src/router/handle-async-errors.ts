@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { UserNotFoundError } from "../services/user.service";
+import Service from "../services/abstract.service";
 
 /** @private */
 // this helps reducing line length
@@ -12,7 +12,7 @@ const handleAsyncErrors = (...args: Params): RequestHandler => async (req, res, 
 	try {
 		await Promise.resolve(handler(req, res, next));
 	} catch (error: unknown) {
-		if (error instanceof UserNotFoundError)
+		if (error instanceof Service.Error)
 			return res.status(404).json({
 				error: `Could not ${actionDescription}`,
 				message: error.message,
