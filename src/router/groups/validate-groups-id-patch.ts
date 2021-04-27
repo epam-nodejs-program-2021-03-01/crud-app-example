@@ -4,7 +4,7 @@ import { createValidator } from "express-joi-validation";
 import type DefineValidRequest from "../../typings/define-valid-request";
 import { GroupTypeCreation, permissions } from "../../db/models/group";
 
-export type ValidRequest = DefineValidRequest<GroupTypeCreation>;
+export type ValidRequest = DefineValidRequest<Partial<GroupTypeCreation>>;
 
 export const props = {
 	name: Joi.string()
