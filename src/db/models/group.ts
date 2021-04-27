@@ -2,13 +2,7 @@ import type Entity from "../../typings/db/entity";
 import type { ImplyTimestamps } from "../../typings/db/with-timestamps";
 import client, { Model, DataTypes } from "../client";
 
-export type Permission =
-	| "READ"
-	| "WRITE"
-	| "DELETE"
-	| "SHARE"
-	| "UPLOAD_FILES"
-	;
+export type Permission = (typeof permissions)[number];
 
 export interface GroupTypeCreation {
 	name: string;
@@ -17,6 +11,8 @@ export interface GroupTypeCreation {
 
 export interface GroupType extends Entity, GroupTypeCreation {
 }
+
+export const permissions = [ "READ", "WRITE", "DELETE", "SHARE", "UPLOAD_FILES" ] as const;
 
 export class Group extends Model<GroupType, GroupTypeCreation> {}
 
@@ -34,9 +30,7 @@ Group.init<ImplyTimestamps<Group>>({
 		allowNull: false,
 	},
 	permissions: {
-		type: DataTypes.ARRAY(DataTypes.ENUM<Permission>({
-			values: [ "READ", "WRITE", "DELETE", "SHARE", "UPLOAD_FILES" ],
-		})),
+		type: DataTypes.ARRAY(DataTypes.ENUM<Permission>(...permissions)),
 		allowNull: false,
 		defaultValue: [],
 	},

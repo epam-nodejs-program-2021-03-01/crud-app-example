@@ -3,6 +3,7 @@ import allowMethods from "express-allow-methods";
 import sendStatus from "../../middlewares/send-status";
 import GroupService from "../../services/group.service";
 import handleAsyncErrors from "../handle-async-errors";
+import validateGroupsIdPatch, { ValidRequest as GroupsIdPatchRequest } from "./validate-groups-id-patch";
 
 /** @private */
 const NOT_IMPLEMENTED = sendStatus(501); // TODO: delete
@@ -32,8 +33,11 @@ router.route("/:id")
 
 		res.json(group);
 	}))
-	.patch(NOT_IMPLEMENTED, handleAsyncErrors("update group", async () => {
-		// update group by ID
+	.patch(...validateGroupsIdPatch(), handleAsyncErrors("update group", async (req: GroupsIdPatchRequest, res) => {
+		const groupID = req.params.id;
+		const group = await groupService.update(groupID, req.body);
+
+		res.json(group);
 	}))
 	.delete(handleAsyncErrors("delete group", async (req, res) => {
 		const groupID = req.params.id;
