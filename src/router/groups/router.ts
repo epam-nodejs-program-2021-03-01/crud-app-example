@@ -20,9 +20,9 @@ router.route("/")
 
 		res.json(groups);
 	})
-	.post(NOT_IMPLEMENTED, () => {
+	.post(NOT_IMPLEMENTED, handleAsyncErrors("create group", async () => {
 		// create new group
-	});
+	}));
 
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
@@ -32,9 +32,9 @@ router.route("/:id")
 
 		res.json(group);
 	}))
-	.patch(NOT_IMPLEMENTED, () => {
+	.patch(NOT_IMPLEMENTED, handleAsyncErrors("update group", async () => {
 		// update group by ID
-	})
+	}))
 	.delete(handleAsyncErrors("delete group", async (req, res) => {
 		const groupID = req.params.id;
 		const group = await groupService.delete(groupID);
