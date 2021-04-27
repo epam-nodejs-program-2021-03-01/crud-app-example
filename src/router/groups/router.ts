@@ -1,12 +1,9 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
-import sendStatus from "../../middlewares/send-status";
 import GroupService from "../../services/group.service";
 import handleAsyncErrors from "../handle-async-errors";
 import validateGroupsIdPatch, { ValidRequest as GroupsIdPatchRequest } from "./validate-groups-id-patch";
-
-/** @private */
-const NOT_IMPLEMENTED = sendStatus(501); // TODO: delete
+import validateGroupsPost, { ValidRequest as GroupsPostRequest } from "./validate-groups-post";
 
 /** @private */
 const groupService = new GroupService();
@@ -21,8 +18,13 @@ router.route("/")
 
 		res.json(groups);
 	})
-	.post(NOT_IMPLEMENTED, handleAsyncErrors("create group", async () => {
-		// create new group
+	.post(...validateGroupsPost(), handleAsyncErrors("create group", async (req: GroupsPostRequest, res) => {
+		const { id: groupID, createdAt } = await groupService.create(req.body);
+
+		res.status(201).json({
+			groupID,
+			createdAt,
+		});
 	}));
 
 router.route("/:id")
