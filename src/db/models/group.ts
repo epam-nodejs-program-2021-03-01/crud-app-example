@@ -1,5 +1,5 @@
-import type Entity from "../../typings/db/entity";
-import type { ImplyTimestamps } from "../../typings/db/with-timestamps";
+import type Entity from "../typings/entity";
+import type { ImplyTimestamps } from "../typings/with-timestamps";
 import client, { Model, DataTypes } from "../client";
 
 export type Permission = (typeof permissions)[number];
