@@ -1,5 +1,5 @@
-import type Entity from "../typings/entity";
-import type { ImplyTimestamps } from "../typings/with-timestamps";
+import type Entity from "../entity.type";
+import type { ImplyTimestamps } from "../with-timestamps.type";
 import client, { Model, DataTypes } from "../client";
 
 export interface UserTypeCreation {

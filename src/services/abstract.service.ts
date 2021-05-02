@@ -1,5 +1,5 @@
 import type { Model } from "sequelize";
-import type Entity from "../db/typings/entity";
+import type Entity from "../db/entity.type";
 
 /** @public */
 namespace Service {
