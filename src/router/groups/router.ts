@@ -59,21 +59,27 @@ router.route("/:id/users")
 
 		res.redirect(301, `/groups/${groupID}?users`);
 	})
-	.put(...validateGroupsIdUsersPut(), async (req: GroupsIdUsersPutRequest, res) => {
-		const userIDs = req.body.userIDs;
-		const groupID = req.params.id;
+	.put(
+		...validateGroupsIdUsersPut(),
+		handleAsyncErrors("add users to the group", async (req: GroupsIdUsersPutRequest, res) => {
+			const userIDs = req.body.userIDs;
+			const groupID = req.params.id;
 
-		await groupService.addUsersToGroup(groupID, userIDs);
+			await groupService.addUsersToGroup(groupID, userIDs);
 
-		res.redirect(303, `/groups/${groupID}/users`);
-	})
-	.delete(...validateGroupsIdUsersDelete(), async (req: GroupsIdUsersDeleteRequest, res) => {
-		const userIDs = req.body.userIDs;
-		const groupID = req.params.id;
+			res.redirect(303, `/groups/${groupID}/users`);
+		}),
+	)
+	.delete(
+		...validateGroupsIdUsersDelete(),
+		handleAsyncErrors("remove users from the group", async (req: GroupsIdUsersDeleteRequest, res) => {
+			const userIDs = req.body.userIDs;
+			const groupID = req.params.id;
 
-		await groupService.removeUsersFromGroup(groupID, userIDs);
+			await groupService.removeUsersFromGroup(groupID, userIDs);
 
-		res.redirect(303, `/groups/${groupID}/users`);
-	});
+			res.redirect(303, `/groups/${groupID}/users`);
+		}),
+	);
 
 export default router;
