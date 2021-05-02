@@ -1,5 +1,4 @@
-import type { Transaction, TransactionOptions } from "sequelize/types";
-import client from "./client";
+import client, { Transaction, TransactionOptions } from "./client";
 
 /** @private */
 interface Action<Result> {
