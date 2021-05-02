@@ -57,7 +57,9 @@ router.route("/:id")
 router.route("/:id/users")
 	.all(allowMethods("GET", "PUT", "DELETE"))
 	.get((req, res) => {
-		res.redirect(301, `/groups/${req.params.id}?users`);
+		const groupID = req.params.id;
+
+		res.redirect(301, `/groups/${groupID}?users`);
 	})
 	.put(NOT_IMPLEMENTED, () => {
 		// add users to the group (if they aren't there already)
