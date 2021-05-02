@@ -2,10 +2,7 @@ import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import GroupService from "../../services/group.service";
 import handleAsyncErrors from "../handle-async-errors";
-import validateGroupsIdPatch, { ValidRequest as GroupsIdPatchRequest } from "./validate-groups-id-patch";
-import validateGroupsIdUsersDelete, { ValidRequest as GroupsIdUsersDeleteRequest } from "./validate-groups-id-users-delete";
-import validateGroupsIdUsersPut, { ValidRequest as GroupsIdUsersPutRequest } from "./validate-groups-id-users-put";
-import validateGroupsPost, { ValidRequest as GroupsPostRequest } from "./validate-groups-post";
+import { validators, requests } from "./validation";
 
 /** @private */
 const groupService = new GroupService();
@@ -20,14 +17,17 @@ router.route("/")
 
 		res.json(groups);
 	})
-	.post(...validateGroupsPost(), handleAsyncErrors("create group", async (req: GroupsPostRequest, res) => {
-		const { id: groupID, createdAt } = await groupService.create(req.body);
+	.post(
+		validators.forCreateGroup,
+		handleAsyncErrors("create group", async (req: requests.CreateGroup, res) => {
+			const { id: groupID, createdAt } = await groupService.create(req.body);
 
-		res.status(201).json({
-			groupID,
-			createdAt,
-		});
-	}));
+			res.status(201).json({
+				groupID,
+				createdAt,
+			});
+		}),
+	);
 
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
@@ -39,12 +39,15 @@ router.route("/:id")
 
 		res.json(group);
 	}))
-	.patch(...validateGroupsIdPatch(), handleAsyncErrors("update group", async (req: GroupsIdPatchRequest, res) => {
-		const groupID = req.params.id;
-		const group = await groupService.update(groupID, req.body);
+	.patch(
+		validators.forUpdateGroup,
+		handleAsyncErrors("update group", async (req: requests.UpdateGroup, res) => {
+			const groupID = req.params.id;
+			const group = await groupService.update(groupID, req.body);
 
-		res.json(group);
-	}))
+			res.json(group);
+		}),
+	)
 	.delete(handleAsyncErrors("delete group", async (req, res) => {
 		const groupID = req.params.id;
 		const group = await groupService.delete(groupID);
@@ -60,8 +63,8 @@ router.route("/:id/users")
 		res.redirect(301, `/groups/${groupID}?users`);
 	})
 	.put(
-		...validateGroupsIdUsersPut(),
-		handleAsyncErrors("add users to the group", async (req: GroupsIdUsersPutRequest, res) => {
+		validators.forAddUsers,
+		handleAsyncErrors("add users to the group", async (req: requests.AddUsers, res) => {
 			const userIDs = req.body.userIDs;
 			const groupID = req.params.id;
 
@@ -71,8 +74,8 @@ router.route("/:id/users")
 		}),
 	)
 	.delete(
-		...validateGroupsIdUsersDelete(),
-		handleAsyncErrors("remove users from the group", async (req: GroupsIdUsersDeleteRequest, res) => {
+		validators.forRemoveUsers,
+		handleAsyncErrors("remove users from the group", async (req: requests.RemoveUsers, res) => {
 			const userIDs = req.body.userIDs;
 			const groupID = req.params.id;
 
