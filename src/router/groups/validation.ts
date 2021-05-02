@@ -9,6 +9,11 @@ interface WithUserIDs {
 }
 
 /** @private */
+interface GetGroupQuery {
+	users?: "false" | 0 | "0" | unknown;
+}
+
+/** @private */
 const groupPermissionItem = Joi.string()
 	.valid(...permissions);
 
@@ -20,7 +25,11 @@ const groupPermissions = Joi.array()
 const userIDs = Joi.array()
 	.items(naturalNumber);
 
+/** @private */
+const includeUsersFlag = Joi.any();
+
 export namespace requests {
+	export type GetGroup = DefineValidRequest<unknown, GetGroupQuery>;
 	export type CreateGroup = DefineValidRequest<GroupTypeCreation>;
 	export type UpdateGroup = DefineValidRequest<Partial<GroupTypeCreation>>;
 	export type AddUsers = DefineValidRequest<WithUserIDs>;
@@ -28,6 +37,12 @@ export namespace requests {
 }
 
 export namespace validators {
+	export const forGetGroup = celebrate({
+		[Segments.QUERY]: Joi.object<GetGroupQuery>({
+			users: includeUsersFlag,
+		}),
+	});
+
 	export const forCreateGroup = celebrate({
 		[Segments.BODY]: Joi.object<GroupTypeCreation>({
 			name: name.required(),
