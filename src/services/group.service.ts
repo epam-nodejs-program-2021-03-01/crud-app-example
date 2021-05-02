@@ -1,6 +1,8 @@
 import { Op } from "sequelize";
+import insideTransaction from "../db/inside-transaction";
 import User, { UserType } from "../db/models/user";
 import Group, { GroupType, GroupTypeCreation } from "../db/models/group";
+import UserGroup from "../db/models/user-group";
 import Service from "./abstract.service";
 
 /** @private */
@@ -72,6 +74,12 @@ export default class GroupService extends Service<Group> {
 			throw new GroupNotFoundError(id);
 
 		return record.get({ plain: true }) as GroupWithUsersType;
+	}
+
+	async addUsersToGroup(groupID: string, userIDs: string[]): Promise<void> {
+		const records = userIDs.map((userID) => ({ userID, groupID }));
+
+		await insideTransaction((transaction) => UserGroup.bulkCreate(records, { transaction }));
 	}
 }
 

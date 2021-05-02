@@ -4,6 +4,7 @@ import sendStatus from "../../middlewares/send-status"; // TODO: remove
 import GroupService from "../../services/group.service";
 import handleAsyncErrors from "../handle-async-errors";
 import validateGroupsIdPatch, { ValidRequest as GroupsIdPatchRequest } from "./validate-groups-id-patch";
+import validateGroupsIdUsersPut, { ValidRequest as GroupsIdUsersPutRequest } from "./validate-groups-id-users-put";
 import validateGroupsPost, { ValidRequest as GroupsPostRequest } from "./validate-groups-post";
 
 /** @private */
@@ -61,8 +62,13 @@ router.route("/:id/users")
 
 		res.redirect(301, `/groups/${groupID}?users`);
 	})
-	.put(NOT_IMPLEMENTED, () => {
-		// add users to the group (if they aren't there already)
+	.put(...validateGroupsIdUsersPut(), async (req: GroupsIdUsersPutRequest, res) => {
+		const userIDs = req.body.userIDs;
+		const groupID = req.params.id;
+
+		await groupService.addUsersToGroup(groupID, userIDs);
+
+		res.redirect(303, `/groups/${groupID}/users`);
 	})
 	.delete(NOT_IMPLEMENTED, () => {
 		// delete users from the group
