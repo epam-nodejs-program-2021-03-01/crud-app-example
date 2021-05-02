@@ -45,6 +45,4 @@ User.init<ImplyTimestamps<User>>({
 	tableName: "Users",
 });
 
-(async () => {
-	await User.sync<User>();
-})();
+User.sync();

@@ -39,6 +39,4 @@ Group.init<ImplyTimestamps<Group>>({
 	tableName: "Groups",
 });
 
-(async () => {
-	await Group.sync<Group>();
-})();
+Group.sync();
