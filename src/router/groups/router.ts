@@ -1,5 +1,6 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
+import sendStatus from "../../middlewares/send-status"; // TODO: remove
 import GroupService from "../../services/group.service";
 import handleAsyncErrors from "../handle-async-errors";
 import validateGroupsIdPatch, { ValidRequest as GroupsIdPatchRequest } from "./validate-groups-id-patch";
@@ -7,6 +8,9 @@ import validateGroupsPost, { ValidRequest as GroupsPostRequest } from "./validat
 
 /** @private */
 const groupService = new GroupService();
+
+/** @private */
+const NOT_IMPLEMENTED = sendStatus(501);
 
 /** @public */
 const router = Router();
@@ -49,5 +53,18 @@ router.route("/:id")
 
 		res.json(group);
 	}));
+
+router.route("/:id/users")
+	.all(allowMethods("GET", "PUT", "DELETE"))
+	.get((req, res) => {
+		res.redirect(301, `/groups/${req.params.id}?users`);
+	})
+	.put(NOT_IMPLEMENTED, () => {
+		// add users to the group (if they aren't there already)
+	})
+	.delete(NOT_IMPLEMENTED, () => {
+		// delete users from the group
+		// silently return if the users aren't in the group
+	});
 
 export default router;
