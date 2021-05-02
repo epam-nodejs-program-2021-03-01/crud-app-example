@@ -31,7 +31,9 @@ router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
 	.get(handleAsyncErrors("get group", async (req, res) => {
 		const groupID = req.params.id;
-		const group = await groupService.get(groupID);
+		const group = await groupService.get(groupID, {
+			includeUsers: "users" in req.query && req.query.users !== "0" && req.query.users !== "false",
+		});
 
 		res.json(group);
 	}))

@@ -1,10 +1,21 @@
 import { Op } from "sequelize";
+import User, { UserType } from "../db/models/user";
 import Group, { GroupType, GroupTypeCreation } from "../db/models/group";
 import Service from "./abstract.service";
 
 /** @private */
 interface FindQuery extends Service.FindQuery {
 	filter?: string;
+}
+
+/** @private */
+interface GetOptions {
+	includeUsers?: boolean;
+}
+
+/** @private */
+interface GroupWithUsersType extends GroupType {
+	users: UserType[];
 }
 
 export default class GroupService extends Service<Group> {
@@ -42,6 +53,25 @@ export default class GroupService extends Service<Group> {
 		await record.destroy();
 
 		return record.get();
+	}
+
+	async get(id: string, options: GetOptions = {}): Promise<GroupType | GroupWithUsersType> {
+		const { includeUsers = true } = options;
+
+		if (!includeUsers)
+			return super.get(id);
+
+		const record = await Group.findByPk(id, {
+			include: {
+				model: User,
+				as: "users",
+			},
+		});
+
+		if (record == null)
+			throw new GroupNotFoundError(id);
+
+		return record.get({ plain: true }) as GroupWithUsersType;
 	}
 }
 
