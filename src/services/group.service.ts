@@ -77,9 +77,23 @@ export default class GroupService extends Service<Group> {
 	}
 
 	async addUsersToGroup(groupID: string, userIDs: string[]): Promise<void> {
+		// TODO: prevent adding deleted users to groups
+
 		const records = userIDs.map((userID) => ({ userID, groupID }));
 
 		await insideTransaction((transaction) => UserGroup.bulkCreate(records, { transaction }));
+	}
+
+	async removeUsersFromGroup(groupID: string, userIDs: string[]): Promise<void> {
+		await insideTransaction((transaction) => UserGroup.destroy({
+			where: {
+				groupID,
+				userID: {
+					[Op.in]: userIDs,
+				},
+			},
+			transaction,
+		}));
 	}
 }
 

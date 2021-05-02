@@ -1,17 +1,14 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
-import sendStatus from "../../middlewares/send-status"; // TODO: remove
 import GroupService from "../../services/group.service";
 import handleAsyncErrors from "../handle-async-errors";
 import validateGroupsIdPatch, { ValidRequest as GroupsIdPatchRequest } from "./validate-groups-id-patch";
+import validateGroupsIdUsersDelete, { ValidRequest as GroupsIdUsersDeleteRequest } from "./validate-groups-id-users-delete";
 import validateGroupsIdUsersPut, { ValidRequest as GroupsIdUsersPutRequest } from "./validate-groups-id-users-put";
 import validateGroupsPost, { ValidRequest as GroupsPostRequest } from "./validate-groups-post";
 
 /** @private */
 const groupService = new GroupService();
-
-/** @private */
-const NOT_IMPLEMENTED = sendStatus(501);
 
 /** @public */
 const router = Router();
@@ -70,9 +67,13 @@ router.route("/:id/users")
 
 		res.redirect(303, `/groups/${groupID}/users`);
 	})
-	.delete(NOT_IMPLEMENTED, () => {
-		// delete users from the group
-		// silently return if the users aren't in the group
+	.delete(...validateGroupsIdUsersDelete(), async (req: GroupsIdUsersDeleteRequest, res) => {
+		const userIDs = req.body.userIDs;
+		const groupID = req.params.id;
+
+		await groupService.removeUsersFromGroup(groupID, userIDs);
+
+		res.redirect(303, `/groups/${groupID}/users`);
 	});
 
 export default router;
