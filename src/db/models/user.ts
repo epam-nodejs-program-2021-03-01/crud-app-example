@@ -2,17 +2,17 @@ import type Entity from "../typings/entity";
 import type { ImplyTimestamps } from "../typings/with-timestamps";
 import client, { Model, DataTypes } from "../client";
 
-export interface UserTypeRequired {
+export interface UserTypeCreation {
 	login: string;
 	password: string;
 	age: number;
 }
 
-export interface UserType extends Entity, UserTypeRequired {
+export interface UserType extends Entity, UserTypeCreation {
 	isDeleted?: boolean;
 }
 
-export class User extends Model<UserType, UserTypeRequired> {}
+export class User extends Model<UserType, UserTypeCreation> {}
 
 export default User;
 

@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import User, { UserType, UserTypeRequired } from "../db/models/user";
+import User, { UserType, UserTypeCreation } from "../db/models/user";
 import Service from "./abstract.service";
 
 /** @private */
@@ -37,7 +37,7 @@ export default class UserService extends Service<User> {
 		return records.map((record) => record.get());
 	}
 
-	async create(props: UserTypeRequired): Promise<UserType> {
+	async create(props: UserTypeCreation): Promise<UserType> {
 		const record = await User.create(props);
 
 		return record.get();

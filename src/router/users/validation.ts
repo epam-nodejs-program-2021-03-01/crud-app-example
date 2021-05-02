@@ -1,5 +1,5 @@
 import { celebrate, Joi, Segments } from "celebrate";
-import type { UserTypeRequired } from "../../db/models/user";
+import type { UserTypeCreation } from "../../db/models/user";
 import { name, naturalNumber } from "../definitions";
 import type DefineValidRequest from "../define-valid-request.type";
 
@@ -26,8 +26,8 @@ const userAge = Joi.number()
 
 export namespace requests {
 	export type GetUsers = DefineValidRequest<unknown, GetUsersQuery>;
-	export type CreateUser = DefineValidRequest<UserTypeRequired>;
-	export type UpdateUser = DefineValidRequest<Partial<UserTypeRequired>>;
+	export type CreateUser = DefineValidRequest<UserTypeCreation>;
+	export type UpdateUser = DefineValidRequest<Partial<UserTypeCreation>>;
 }
 
 export namespace validators {
@@ -39,7 +39,7 @@ export namespace validators {
 	});
 
 	export const forCreateUser = celebrate({
-		[Segments.BODY]: Joi.object<UserTypeRequired>({
+		[Segments.BODY]: Joi.object<UserTypeCreation>({
 			login: name.required(),
 			password: userPassword.required(),
 			age: userAge.required(),
@@ -47,7 +47,7 @@ export namespace validators {
 	});
 
 	export const forUpdateUser = celebrate({
-		[Segments.BODY]: Joi.object<Partial<UserTypeRequired>>({
+		[Segments.BODY]: Joi.object<Partial<UserTypeCreation>>({
 			login: name,
 			password: userPassword,
 			age: userAge,
