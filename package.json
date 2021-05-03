@@ -20,7 +20,7 @@
     "clean": "del-cli dist/*",
     "prebuild": "npm run clean",
     "build": "tsc --project ./tsconfig.production.json",
-    "postbuild": "del-cli dist/**/*.type.js* dist/typings",
+    "postbuild": "del-cli dist/**/*.type.js* dist/**/typings/**/*.js*",
     "lint": "eslint --ext .js,.ts src",
     "FIXME:": "change ./env/common to ./env/remote",
     "start": "node --require ./env/common.js dist/index.js",
@@ -31,6 +31,7 @@
   "devDependencies": {
     "@types/express": "4.17.11",
     "@types/pg": "7.14.11",
+    "@types/promise-timeout": "1.3.0",
     "@types/uuid": "8.3.0",
     "@typescript-eslint/eslint-plugin": "4.22.0",
     "@typescript-eslint/parser": "4.22.0",
@@ -41,13 +42,14 @@
     "typescript": "4.2.4"
   },
   "dependencies": {
+    "celebrate": "14.0.0",
     "dotenv-extended": "2.9.0",
     "express": "4.17.1",
     "express-allow-methods": "0.1.0",
-    "express-joi-validation": "5.0.0",
     "joi": "17.4.0",
     "pg": "8.6.0",
     "pg-hstore": "2.3.3",
+    "promise-timeout": "1.3.0",
     "sequelize": "6.6.2"
   }
 }

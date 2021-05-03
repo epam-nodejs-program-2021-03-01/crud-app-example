@@ -11,5 +11,16 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
-  ]
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "dist"
+  ],
+  "rules": {
+    // namespaces are used as mechanism for nesting types and values
+    "@typescript-eslint/no-namespace": "off",
+
+    // each type has its own specific value, just be careful about it
+    "@typescript-eslint/ban-types": "off"
+  }
 }

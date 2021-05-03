@@ -1,24 +1,14 @@
 import { Op } from "sequelize";
-import type Entity from "../typings/db/entity";
-import User, { UserType, UserTypeRequired } from "../db/models/user";
+import User, { UserType, UserTypeCreation } from "../db/models/user";
+import Service from "./abstract.service";
 
 /** @private */
-interface FindQuery {
+interface FindQuery extends Service.FindQuery {
 	filter?: string;
-	limit?: number;
 }
 
-/** @private */
-interface CreateUserResult {
-	id: string;
-	createdAt: string;
-}
-
-/** @private */
-type AnyProps = Omit<UserType, keyof Entity>;
-
-export default class UserService {
-	private async getRecord(id: string): Promise<User> {
+export default class UserService extends Service<User> {
+	protected async getRecord(id: string): Promise<User> {
 		const record = await User.findOne({
 			where: {
 				id,
@@ -30,14 +20,6 @@ export default class UserService {
 			throw new UserNotFoundError(id);
 
 		return record;
-	}
-
-	private async updateAnyProps(id: string, props: Partial<AnyProps>): Promise<UserType> {
-		const record = await this.getRecord(id);
-
-		await record.update(props);
-
-		return record.get();
 	}
 
 	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
@@ -55,30 +37,20 @@ export default class UserService {
 		return records.map((record) => record.get());
 	}
 
-	async create(props: UserTypeRequired): Promise<CreateUserResult> {
+	async create(props: UserTypeCreation): Promise<UserType> {
 		const record = await User.create(props);
-
-		const { id, createdAt } = record.get();
-
-		return { id, createdAt };
-	}
-
-	async get(id: string): Promise<UserType> {
-		const record = await this.getRecord(id);
 
 		return record.get();
 	}
 
-	async update(id: string, props: Partial<UserTypeRequired>): Promise<UserType> {
-		return this.updateAnyProps(id, props);
-	}
-
 	async delete(id: string): Promise<UserType> {
-		return this.updateAnyProps(id, { isDeleted: true });
+		const record = await this.updateAnyProps(id, { isDeleted: true });
+
+		return record.get();
 	}
 }
 
-export class UserNotFoundError extends Error {
+export class UserNotFoundError extends Service.ValueNotFoundError {
 	constructor(userID: string) {
 		super(`User "${userID}" was not found`);
 	}

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import groupsRouter from "./groups/router";
 import usersRouter from "./users/router";
 
 /** @public */
@@ -13,6 +14,7 @@ router.route("/")
 		});
 	});
 
+router.use("/groups", groupsRouter);
 router.use("/users", usersRouter);
 
 export default router;

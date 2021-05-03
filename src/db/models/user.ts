@@ -1,18 +1,18 @@
-import type Entity from "../../typings/db/entity";
-import type { ImplyTimestamps } from "../../typings/db/with-timestamps";
+import type Entity from "../entity.type";
+import type { ImplyTimestamps } from "../with-timestamps.type";
 import client, { Model, DataTypes } from "../client";
 
-export interface UserTypeRequired {
+export interface UserTypeCreation {
 	login: string;
 	password: string;
 	age: number;
 }
 
-export interface UserType extends Entity, UserTypeRequired {
+export interface UserType extends Entity, UserTypeCreation {
 	isDeleted?: boolean;
 }
 
-export class User extends Model<UserType, UserTypeRequired> {}
+export class User extends Model<UserType, UserTypeCreation> {}
 
 export default User;
 
@@ -45,6 +45,4 @@ User.init<ImplyTimestamps<User>>({
 	tableName: "Users",
 });
 
-(async () => {
-	await User.sync<User>();
-})();
+User.sync();
