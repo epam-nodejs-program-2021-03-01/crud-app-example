@@ -65,10 +65,10 @@ Notice that any push to non-development environment branch automatically trigger
 ### Groups
 
 - `GET /groups` – get list of all groups
-	- `GET /groups?users=<any>` – get list of all groups, include information about members
-	- `GET /groups?users=<"0"|"false">` – get list of all groups, without information about members
 - `POST /groups` – create new group
 - `GET /groups/:id` – get group by its ID
+	- `GET /groups/:id?users=<any>` – get group by its ID, include information about members
+	- `GET /groups/:id?users=<"0"|"false">` – get group by its ID, without information about members
 - `PATCH /groups/:id` – update group by its ID
 - `DELETE /groups/:id` – delete group by its ID
 - `GET /groups/:id/users` – get a list of all members of the group
