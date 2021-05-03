@@ -44,10 +44,10 @@ abstract class Service<
 
 /** @public */
 namespace Service {
-	export class Error extends global.Error {
+	export abstract class Error extends global.Error {
 	}
 
-	export class ValueNotFoundError extends Error {
+	export abstract class ValueNotFoundError extends Error {
 	}
 
 	export abstract class ValueNotUniqueError extends Error {
