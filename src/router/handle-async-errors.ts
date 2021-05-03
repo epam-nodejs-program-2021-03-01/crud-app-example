@@ -13,7 +13,7 @@ const handleAsyncErrors = (...args: Params): RequestHandler => async (req, res, 
 		await Promise.resolve(handler(req, res, next));
 	} catch (error: unknown) {
 		if (error instanceof Service.Error)
-			return res.status(404).json({
+			return res.status(error.statusCode).json({
 				error: `Could not ${actionDescription}`,
 				message: error.message,
 			});

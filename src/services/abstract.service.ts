@@ -45,9 +45,11 @@ abstract class Service<
 /** @public */
 namespace Service {
 	export abstract class Error extends global.Error {
+		abstract statusCode: number;
 	}
 
 	export abstract class ValueNotFoundError extends Error {
+		statusCode = 404;
 	}
 
 	export abstract class ValueNotUniqueError extends Error {
