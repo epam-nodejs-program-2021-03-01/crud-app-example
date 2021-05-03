@@ -2,19 +2,24 @@ import type { RequestHandler } from "express";
 import Service from "../services/abstract.service";
 
 /** @private */
+interface Handler {
+	(...args: Parameters<RequestHandler>): void | PromiseLike<void>;
+}
+
+/** @private */
 // this helps reducing line length
-type Params = [ actionDescription: string, handler: RequestHandler ];
+type Params = [ actionName: string, handler: Handler ];
 
 /** @public */
 const handleAsyncErrors = (...args: Params): RequestHandler => async (req, res, next) => {
-	const [ actionDescription, handler ] = args;
+	const [ actionName, handler ] = args;
 
 	try {
-		await Promise.resolve(handler(req, res, next));
+		await handler(req, res, next);
 	} catch (error: unknown) {
 		if (error instanceof Service.Error)
 			return res.status(error.statusCode).json({
-				error: `Could not ${actionDescription}`,
+				error: `Could not ${actionName}`,
 				message: error.message,
 			});
 
