@@ -4,7 +4,7 @@
 	},
 	"compilerOptions": {
 		// Output
-		"target": "es2015",
+		"target": "es2017",
 		"module": "commonjs",
 		"outDir": "dist",
 		"inlineSources": true,
