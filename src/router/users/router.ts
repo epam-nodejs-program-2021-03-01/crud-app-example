@@ -1,7 +1,6 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import UserService from "../../services/user.service";
-import handleAsyncErrors from "../handle-async-errors";
 import { validators, requests } from "./validation";
 
 /** @private */
@@ -37,26 +36,26 @@ router.route("/")
 
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
-	.get(handleAsyncErrors("get user", async (req, res) => {
+	.get(async (req, res) => {
 		const userID = req.params.id;
 		const user = await userService.get(userID);
 	
 		res.json(user);
-	}))
+	})
 	.patch(
 		validators.forUpdateUser,
-		handleAsyncErrors("update user", async (req: requests.UpdateUser, res) => {
+		async (req: requests.UpdateUser, res) => {
 			const userID = req.params.id;
 			const user = await userService.update(userID, req.body);
 
 			res.json(user);
 		},
-	))
-	.delete(handleAsyncErrors("delete user", async (req, res) => {
+	)
+	.delete(async (req, res) => {
 		const userID = req.params.id;
 		const user = await userService.delete(userID);
 
 		res.status(202).json(user);
-	}));
+	});
 
 export default router;

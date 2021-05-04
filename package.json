@@ -44,7 +44,7 @@
   "dependencies": {
     "celebrate": "14.0.0",
     "dotenv-extended": "2.9.0",
-    "express": "4.17.1",
+    "express": "5.0.0-alpha.8",
     "express-allow-methods": "0.1.0",
     "joi": "17.4.0",
     "pg": "8.6.0",
