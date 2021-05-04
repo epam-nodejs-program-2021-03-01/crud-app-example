@@ -1,4 +1,4 @@
-import { celebrate, Joi, Segments } from "celebrate";
+import createValidator, { Joi, Segments } from "../create-validator";
 import type { UserTypeCreation } from "../../db/models/user";
 import { name, naturalNumber } from "../definitions";
 import type DefineValidRequest from "../define-valid-request.type";
@@ -31,14 +31,14 @@ export namespace requests {
 }
 
 export namespace validators {
-	export const forGetUsers = celebrate({
+	export const forGetUsers = createValidator({
 		[Segments.QUERY]: Joi.object<GetUsersQuery>({
 			"login-substring": userLoginSubstring.allow(""),
 			limit: naturalNumber.allow(""),
 		}),
 	});
 
-	export const forCreateUser = celebrate({
+	export const forCreateUser = createValidator({
 		[Segments.BODY]: Joi.object<UserTypeCreation>({
 			login: name.required(),
 			password: userPassword.required(),
@@ -46,7 +46,7 @@ export namespace validators {
 		}),
 	});
 
-	export const forUpdateUser = celebrate({
+	export const forUpdateUser = createValidator({
 		[Segments.BODY]: Joi.object<Partial<UserTypeCreation>>({
 			login: name,
 			password: userPassword,

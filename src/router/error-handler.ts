@@ -1,10 +1,21 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
+import { CelebrateError } from "celebrate";
 import Service from "../services/abstract.service";
 
 /** @private */
 interface ErrorResponseData {
 	statusCode: number;
 	details: string[];
+}
+
+/** @private */
+function combineCelebrateErrorDetails(error: CelebrateError): string[] {
+	const details: string[] = [];
+
+	for (const [ scope, joiError ] of error.details)
+		details.push(`(in ${scope}) ${joiError.message}`);
+
+	return details;
 }
 
 /** @private */
@@ -16,6 +27,13 @@ function createErrorResponseData(error: unknown): ErrorResponseData {
 				error.message,
 			],
 		};
+
+	if (error instanceof CelebrateError) {
+		return {
+			statusCode: 400,
+			details: combineCelebrateErrorDetails(error),
+		};
+	}
 
 	return {
 		statusCode: 500,
