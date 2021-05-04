@@ -1,5 +1,5 @@
-import { celebrate, Joi, Segments } from "celebrate";
 import { GroupTypeCreation, permissions } from "../../db/models/group";
+import createValidator, { Joi, Segments } from "../create-validator";
 import type DefineValidRequest from "../define-valid-request.type";
 import { name, naturalNumber } from "../definitions";
 
@@ -37,33 +37,33 @@ export namespace requests {
 }
 
 export namespace validators {
-	export const forGetGroup = celebrate({
+	export const forGetGroup = createValidator({
 		[Segments.QUERY]: Joi.object<GetGroupQuery>({
 			users: includeUsersFlag,
 		}),
 	});
 
-	export const forCreateGroup = celebrate({
+	export const forCreateGroup = createValidator({
 		[Segments.BODY]: Joi.object<GroupTypeCreation>({
 			name: name.required(),
 			permissions: groupPermissions.required(),
 		}),
 	});
 
-	export const forUpdateGroup = celebrate({
+	export const forUpdateGroup = createValidator({
 		[Segments.BODY]: Joi.object<GroupTypeCreation>({
 			name,
 			permissions: groupPermissions,
 		}),
 	});
 
-	export const forAddUsers = celebrate({
+	export const forAddUsers = createValidator({
 		[Segments.BODY]: Joi.object<WithUserIDs>({
 			userIDs: userIDs.required(),
 		}),
 	});
 
-	export const forRemoveUsers = celebrate({
+	export const forRemoveUsers = createValidator({
 		[Segments.BODY]: Joi.object<WithUserIDs>({
 			userIDs: userIDs.required(),
 		}),
