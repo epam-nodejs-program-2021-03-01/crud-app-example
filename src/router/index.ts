@@ -1,4 +1,5 @@
 import { Router } from "express";
+import errorHandler from "./error-handler";
 import groupsRouter from "./groups/router";
 import usersRouter from "./users/router";
 
@@ -16,5 +17,7 @@ router.route("/")
 
 router.use("/groups", groupsRouter);
 router.use("/users", usersRouter);
+
+router.use(errorHandler());
 
 export default router;
