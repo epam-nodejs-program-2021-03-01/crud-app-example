@@ -43,17 +43,3 @@ UserGroup.init<ImplyTimestamps<UserGroup>>({
 	sequelize: client,
 	tableName: "UserGroup",
 });
-
-User.belongsToMany(Group, {
-	through: UserGroup,
-	as: "groups",
-	foreignKey: "userID",
-});
-
-Group.belongsToMany(User, {
-	through: UserGroup,
-	as: "users",
-	foreignKey: "groupID",
-});
-
-UserGroup.sync();

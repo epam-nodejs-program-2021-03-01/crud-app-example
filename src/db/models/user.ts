@@ -51,5 +51,3 @@ User.init<ImplyTimestamps<User>>({
 		},
 	],
 });
-
-User.sync();
