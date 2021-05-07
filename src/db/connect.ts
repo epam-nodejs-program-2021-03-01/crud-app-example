@@ -1,12 +1,20 @@
+import type { ClientConfig } from "pg";
 import { timeout, TimeoutError } from "promise-timeout";
-import client, { Sequelize } from "./client";
+import client from "./client";
+
+export type ConnectionParameters = Pick<ClientConfig, "user" | "database" | "host" | "port">;
+
+/** @private */
+interface Connection {
+	connectionParameters: ConnectionParameters;
+}
 
 /** @private */
 interface ConnectParams {
 	timeout?: number | string;
 }
 
-export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<Sequelize> {
+export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<ConnectionParameters> {
 	duration = Number(duration);
 
 	if (duration == null)
@@ -25,5 +33,7 @@ export default async function connect({ timeout: duration }: ConnectParams = {})
 			throw error;
 		}
 
-	return client;
+	const { connectionParameters } = await client.connectionManager.getConnection({ type: "read" }) as Connection;
+
+	return connectionParameters;
 }
