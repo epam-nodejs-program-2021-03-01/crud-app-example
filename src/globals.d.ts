@@ -7,6 +7,7 @@ declare global {
 			readonly PORT: string;
 			readonly HEROKU_SLUG_COMMIT: string;
 			readonly DATABASE_URL: string;
+			readonly DATABASE_CONNECT_TIMEOUT: string;
 		}
 	}
 }
