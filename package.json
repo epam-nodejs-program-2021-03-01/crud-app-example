@@ -18,8 +18,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "del-cli dist/*",
+    "build:only": "tsc --project ./tsconfig.production.json",
+    "compile": "npm run build:only -- --noEmit",
     "prebuild": "npm run clean",
-    "build": "tsc --project ./tsconfig.production.json",
+    "build": "npm run build:only",
     "postbuild": "del-cli dist/**/*.type.js* dist/**/typings/**/*.js*",
     "lint": "eslint --ext .js,.ts src",
     "FIXME:": "change ./env/common to ./env/remote",
