@@ -3,10 +3,12 @@ import client, { Sequelize } from "./client";
 
 /** @private */
 interface ConnectParams {
-	timeout?: number;
+	timeout?: number | string;
 }
 
 export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<Sequelize> {
+	duration = Number(duration);
+
 	if (duration == null)
 		await client.authenticate();
 
