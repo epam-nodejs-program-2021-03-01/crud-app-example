@@ -12,6 +12,9 @@
 		"noEmitOnError": true,
 
 		// Development
+		"lib": [
+			"es5",
+		],
 		"checkJs": true,
 		"strict": true,
 		"noUnusedLocals": true,
