@@ -4,6 +4,7 @@ import User, { UserType } from "../db/models/user";
 import Group, { GroupType, GroupTypeCreation } from "../db/models/group";
 import UserGroup from "../db/models/user-group";
 import Service from "./abstract.service";
+import Logged from "../log/logged.decorator";
 
 /** @private */
 interface FindQuery extends Service.FindQuery {
@@ -21,6 +22,7 @@ interface GroupWithUsersType extends GroupType {
 }
 
 export default class GroupService extends Service<Group> {
+	@Logged()
 	protected async getRecord(id: string): Promise<Group> {
 		const record = await Group.findByPk(id);
 
@@ -30,6 +32,7 @@ export default class GroupService extends Service<Group> {
 		return record;
 	}
 
+	@Logged()
 	async find({ filter = "", limit }: FindQuery = {}): Promise<GroupType[]> {
 		const records = await Group.findAll({
 			where: {
@@ -43,12 +46,14 @@ export default class GroupService extends Service<Group> {
 		return records.map((record) => record.get());
 	}
 
+	@Logged()
 	async create(props: GroupTypeCreation): Promise<GroupType> {
 		const record = await Group.create(props);
 
 		return record.get();
 	}
 
+	@Logged()
 	async delete(id: string): Promise<GroupType> {
 		const record = await this.getRecord(id);
 
@@ -57,6 +62,7 @@ export default class GroupService extends Service<Group> {
 		return record.get();
 	}
 
+	@Logged()
 	async get(id: string, options: GetOptions = {}): Promise<GroupType | GroupWithUsersType> {
 		const { includeUsers = true } = options;
 
@@ -76,6 +82,7 @@ export default class GroupService extends Service<Group> {
 		return record.get({ plain: true }) as GroupWithUsersType;
 	}
 
+	@Logged()
 	async addUsersToGroup(groupID: string, userIDs: string[]): Promise<void> {
 		// TODO: prevent adding deleted users to groups
 
@@ -84,6 +91,7 @@ export default class GroupService extends Service<Group> {
 		await insideTransaction((transaction) => UserGroup.bulkCreate(records, { transaction }));
 	}
 
+	@Logged()
 	async removeUsersFromGroup(groupID: string, userIDs: string[]): Promise<void> {
 		await insideTransaction((transaction) => UserGroup.destroy({
 			where: {

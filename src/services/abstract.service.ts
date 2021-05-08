@@ -1,5 +1,6 @@
 import type { Model } from "sequelize";
 import type Entity from "../db/entity.type";
+import Logged from "../log/logged.decorator";
 
 /** @public */
 namespace Service {
@@ -27,12 +28,14 @@ abstract class Service<
 	abstract find(query?: Service.FindQuery): Promise<ValueType[]>;
 	abstract create(props: ValueTypeCreation): Promise<ValueType>;
 
+	@Logged()
 	async get(id: string): Promise<ValueType> {
 		const record = await this.getRecord(id);
 
 		return record.get();
 	}
 
+	@Logged()
 	async update(id: string, props: Partial<ValueTypeCreation>): Promise<ValueType> {
 		const record = await this.updateAnyProps(id, props as Partial<ValueType>);
 
