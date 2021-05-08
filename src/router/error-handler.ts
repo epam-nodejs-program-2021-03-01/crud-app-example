@@ -3,17 +3,24 @@ import { CelebrateError } from "celebrate";
 import Service from "../services/abstract.service";
 
 /** @private */
-interface ErrorResponseData {
-	statusCode: number;
-	details: string[];
+interface Detail {
+	description: string;
 }
 
 /** @private */
-function combineCelebrateErrorDetails(error: CelebrateError): string[] {
-	const details: string[] = [];
+interface ErrorResponseData {
+	statusCode: number;
+	details: Detail[];
+}
+
+/** @private */
+function createDetailsFromCelebrateError(error: CelebrateError): Detail[] {
+	const details: Detail[] = [];
 
 	for (const [ scope, joiError ] of error.details)
-		details.push(`(in ${scope}) ${joiError.message}`);
+		details.push({
+			description: `(in ${scope}) ${joiError.message}`,
+		});
 
 	return details;
 }
@@ -24,21 +31,25 @@ function createErrorResponseData(error: unknown): ErrorResponseData {
 		return {
 			statusCode: error.statusCode,
 			details: [
-				error.message,
+				{
+					description: error.message,
+				},
 			],
 		};
 
 	if (error instanceof CelebrateError) {
 		return {
 			statusCode: 400,
-			details: combineCelebrateErrorDetails(error),
+			details: createDetailsFromCelebrateError(error),
 		};
 	}
 
 	return {
 		statusCode: 500,
 		details: [
-			"Unknown error occurred",
+			{
+				description: "Unknown error occurred",
+			},
 		],
 	};
 }
