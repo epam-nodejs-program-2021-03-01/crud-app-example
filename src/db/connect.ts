@@ -15,20 +15,20 @@ interface ConnectParams {
 }
 
 export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<ConnectionParameters> {
-	duration = Number(duration);
+	const timeoutDuration = Number(duration) || null;
 
-	if (duration == null)
+	if (timeoutDuration == null)
 		await client.authenticate();
 
-	else if (duration % 1 || duration < 0)
-		throw new Error(`Incorrect timeout duration: ${duration}`);
+	else if (timeoutDuration % 1 || timeoutDuration < 0)
+		throw new Error(`Incorrect timeout duration: ${timeoutDuration}`);
 
 	else
 		try {
-			await timeout(client.authenticate(), duration);
+			await timeout(client.authenticate(), timeoutDuration);
 		} catch (error) {
 			if (error instanceof TimeoutError)
-				throw new Error(`Could not connect to DB in ${duration} milliseconds`);
+				throw new Error(`Could not connect to DB in ${timeoutDuration} milliseconds`);
 
 			throw error;
 		}
