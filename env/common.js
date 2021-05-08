@@ -13,13 +13,3 @@ const options = {
 module.exports = {
 	options,
 };
-
-process.on('unhandledRejection', (/** @type {unknown} */ reason) => {
-	if (reason instanceof Error)
-		throw reason;
-
-	if (typeof reason === "string")
-		throw new Error(reason);
-
-	throw new Error(JSON.stringify(reason));
-});
