@@ -1,7 +1,5 @@
 import type { Level } from "./log/logger";
 
-export {};
-
 declare global {
 	namespace NodeJS {
 		interface ProcessEnv {
