@@ -1,7 +1,6 @@
-import createValidator, { Joi, Segments } from "../create-validator";
 import type { UserTypeCreation } from "../../db/models/user";
 import { name, naturalNumber } from "../definitions";
-import type DefineValidRequest from "../define-valid-request.type";
+import RequestValidation, { Joi, Segments } from "../request-validation";
 
 /** @private */
 interface GetUsersQuery {
@@ -24,33 +23,25 @@ const userAge = Joi.number()
 	.min(4)
 	.max(130);
 
-export namespace requests {
-	export type GetUsers = DefineValidRequest<unknown, GetUsersQuery>;
-	export type CreateUser = DefineValidRequest<UserTypeCreation>;
-	export type UpdateUser = DefineValidRequest<Partial<UserTypeCreation>>;
-}
+export const getUsers = new RequestValidation<unknown, GetUsersQuery>({
+	[Segments.QUERY]: Joi.object<GetUsersQuery>({
+		"login-substring": userLoginSubstring.allow(""),
+		limit: naturalNumber.allow(""),
+	}),
+});
 
-export namespace validators {
-	export const forGetUsers = createValidator({
-		[Segments.QUERY]: Joi.object<GetUsersQuery>({
-			"login-substring": userLoginSubstring.allow(""),
-			limit: naturalNumber.allow(""),
-		}),
-	});
+export const createUser = new RequestValidation<UserTypeCreation>({
+	[Segments.BODY]: Joi.object<UserTypeCreation>({
+		login: name.required(),
+		password: userPassword.required(),
+		age: userAge.required(),
+	}),
+});
 
-	export const forCreateUser = createValidator({
-		[Segments.BODY]: Joi.object<UserTypeCreation>({
-			login: name.required(),
-			password: userPassword.required(),
-			age: userAge.required(),
-		}),
-	});
-
-	export const forUpdateUser = createValidator({
-		[Segments.BODY]: Joi.object<Partial<UserTypeCreation>>({
-			login: name,
-			password: userPassword,
-			age: userAge,
-		}),
-	});
-}
+export const updateUser = new RequestValidation<Partial<UserTypeCreation>>({
+	[Segments.BODY]: Joi.object<Partial<UserTypeCreation>>({
+		login: name,
+		password: userPassword,
+		age: userAge,
+	}),
+});
