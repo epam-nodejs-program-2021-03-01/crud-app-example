@@ -42,7 +42,7 @@ function toCall(key: PropertyKey, args: unknown[]): string {
 
 // FIXME: very poorly typed
 export default function Logged<Instance extends object>(): MethodDecorator {
-	return function (target, key, descriptor): void {
+	return (target, key, descriptor): void => {
 		if (descriptor.value == null)
 			return;
 
@@ -57,9 +57,9 @@ export default function Logged<Instance extends object>(): MethodDecorator {
 			logPrefix = context.constructor.name + NON_STATIC_DESIGNATOR;
 
 		const method = descriptor.value as unknown as Function;
-		const logged: Function = (...args) => {
+		const logged: Function = function (this: typeof context, ...args) {
 			console.log(`Calling: ${logPrefix + toCall(key, args)}`);
-			return method.apply(target, args);
+			return method.apply(this, args);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
