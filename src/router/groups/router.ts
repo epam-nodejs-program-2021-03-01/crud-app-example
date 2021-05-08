@@ -1,7 +1,7 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import GroupService from "../../services/group.service";
-import { validators, requests } from "./validation";
+import { getGroup, createGroup, updateGroup, addUsers, removeUsers } from "./validation";
 
 /** @private */
 const groupService = new GroupService();
@@ -17,8 +17,8 @@ router.route("/")
 		res.json(groups);
 	})
 	.post(
-		validators.forCreateGroup,
-		async (req: requests.CreateGroup, res) => {
+		createGroup.requestValidator,
+		async (req: typeof createGroup.request, res) => {
 			const { id: groupID, createdAt } = await groupService.create(req.body);
 
 			res.status(201).json({
@@ -31,8 +31,8 @@ router.route("/")
 router.route("/:id")
 	.all(allowMethods("GET", "PATCH", "DELETE"))
 	.get(
-		validators.forGetGroup,
-		async (req: requests.GetGroup, res) => {
+		getGroup.requestValidator,
+		async (req: typeof getGroup.request, res) => {
 			const groupID = req.params.id;
 			const group = await groupService.get(groupID, {
 				includeUsers: "users" in req.query && req.query.users !== "0" && req.query.users !== "false",
@@ -42,8 +42,8 @@ router.route("/:id")
 		},
 	)
 	.patch(
-		validators.forUpdateGroup,
-		async (req: requests.UpdateGroup, res) => {
+		updateGroup.requestValidator,
+		async (req: typeof updateGroup.request, res) => {
 			const groupID = req.params.id;
 			const group = await groupService.update(groupID, req.body);
 
@@ -65,8 +65,8 @@ router.route("/:id/users")
 		res.redirect(301, `/groups/${groupID}?users`);
 	})
 	.put(
-		validators.forAddUsers,
-		async (req: requests.AddUsers, res) => {
+		addUsers.requestValidator,
+		async (req: typeof addUsers.request, res) => {
 			const userIDs = req.body.userIDs;
 			const groupID = req.params.id;
 
@@ -76,8 +76,8 @@ router.route("/:id/users")
 		},
 	)
 	.delete(
-		validators.forRemoveUsers,
-		async (req: requests.RemoveUsers, res) => {
+		removeUsers.requestValidator,
+		async (req: typeof removeUsers.request, res) => {
 			const userIDs = req.body.userIDs;
 			const groupID = req.params.id;
 
