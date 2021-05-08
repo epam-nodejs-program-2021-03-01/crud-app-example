@@ -1,6 +1,7 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 import { CelebrateError } from "celebrate";
 import Service from "../services/abstract.service";
+import logger from "../log/logger";
 
 /** @private */
 interface Detail {
@@ -62,7 +63,7 @@ function createErrorMessage(error: unknown, req: Parameters<RequestHandler>[0]):
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (): ErrorRequestHandler => async (error: unknown, req, res, next) => {
-	console.error(error);
+	logger.error(error);
 
 	const { statusCode, details } = createErrorResponseData(error);
 
