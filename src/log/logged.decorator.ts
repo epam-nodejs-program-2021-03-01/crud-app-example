@@ -1,3 +1,5 @@
+import logger from "./logger";
+
 declare global {
 	interface Function {
 		(...args: unknown[]): unknown;
@@ -58,7 +60,7 @@ export default function Logged<Instance extends object>(): MethodDecorator {
 
 		const method = descriptor.value as unknown as Function;
 		const logged: Function = function (this: typeof context, ...args) {
-			console.log(`Calling: ${logPrefix + toCall(key, args)}`);
+			logger.debug(`Calling: ${logPrefix + toCall(key, args)}`);
 			return method.apply(this, args);
 		};
 
