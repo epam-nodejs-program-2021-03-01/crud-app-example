@@ -3,11 +3,11 @@ import insideTransaction from "../db/inside-transaction";
 import User, { UserType } from "../db/models/user";
 import Group, { GroupType, GroupTypeCreation } from "../db/models/group";
 import UserGroup from "../db/models/user-group";
-import Service from "./abstract.service";
+import ModelService from "./model-abstract.service";
 import Logged from "../log/logged.decorator";
 
 /** @private */
-interface FindQuery extends Service.FindQuery {
+interface FindQuery extends ModelService.FindQuery {
 	filter?: string;
 }
 
@@ -21,7 +21,7 @@ interface GroupWithUsersType extends GroupType {
 	users: UserType[];
 }
 
-export default class GroupService extends Service<Group> {
+export default class GroupService extends ModelService<Group> {
 	@Logged({ level: "debug" })
 	protected async getRecord(id: string): Promise<Group> {
 		const record = await Group.findByPk(id);
@@ -105,7 +105,7 @@ export default class GroupService extends Service<Group> {
 	}
 }
 
-export class GroupNotFoundError extends Service.ValueNotFoundError {
+export class GroupNotFoundError extends ModelService.ValueNotFoundError {
 	constructor(groupID: string) {
 		super(`Group "${groupID}" was not found`);
 	}
