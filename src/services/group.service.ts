@@ -22,7 +22,7 @@ interface GroupWithUsersType extends GroupType {
 }
 
 export default class GroupService extends Service<Group> {
-	@Logged()
+	@Logged({ level: "debug" })
 	protected async getRecord(id: string): Promise<Group> {
 		const record = await Group.findByPk(id);
 
