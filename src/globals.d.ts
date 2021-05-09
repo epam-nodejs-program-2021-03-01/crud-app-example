@@ -12,6 +12,7 @@ declare global {
 			readonly LOGGER_LOGS_DIR: string;
 			readonly LOGGER_OUTPUT_LOG_FILENAME: string;
 			readonly LOGGER_ERROR_LOG_FILENAME: string;
+			readonly JWT_TOKEN_SECRET: string;
 		}
 	}
 }

@@ -52,6 +52,10 @@ Notice that any push to non-development environment branch automatically trigger
 
 - `GET /` – health-check
 
+### Auth
+
+- `GET /auth` – issue new auth token
+
 ### Users
 
 - `GET /users` – get list of all users
