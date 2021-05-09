@@ -25,7 +25,7 @@ User.init<ImplyTimestamps<User>>({
 	},
 	login: {
 		type: DataTypes.STRING,
-		unique: true,
+		unique: "user_login",
 		allowNull: false,
 	},
 	password: {
@@ -43,6 +43,13 @@ User.init<ImplyTimestamps<User>>({
 }, {
 	sequelize: client,
 	tableName: "Users",
+	indexes: [
+		{
+			name: "user_login",
+			fields: [ "login" ],
+			unique: true,
+		},
+	],
 });
 
 User.sync();
