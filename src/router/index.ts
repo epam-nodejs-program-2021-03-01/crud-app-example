@@ -1,4 +1,5 @@
 import { Router } from "express";
+import authRouter from "./auth/router";
 import groupsRouter from "./groups/router";
 import usersRouter from "./users/router";
 
@@ -14,6 +15,7 @@ router.route("/")
 		});
 	});
 
+router.use("/auth", authRouter);
 router.use("/groups", groupsRouter);
 router.use("/users", usersRouter);
 
