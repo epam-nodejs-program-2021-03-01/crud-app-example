@@ -1,14 +1,21 @@
 import type { Request, RequestHandler } from "express";
 import morgan from "morgan";
-import logger from "../log/logger";
+import logger, { Level } from "../log/logger";
+
+/** @private */
+interface HttpLoggerParams {
+	level?: Level;
+}
 
 morgan.token("id", (req: Request) => req.id);
 
 /** @public */
-const httpLogger = (): RequestHandler => morgan(":method :url :id - :status :response-time ms", {
+const httpLogger = ({
+	level = "info",
+}: HttpLoggerParams = {}): RequestHandler => morgan(":method :url :id - :status :response-time ms", {
 	stream: {
 		write(log) {
-			logger.info(log.replace(/\n$/, ""));
+			logger.log(level, log.replace(/\n$/, ""));
 		},
 	},
 });
