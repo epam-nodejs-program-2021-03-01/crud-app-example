@@ -1,4 +1,4 @@
-import logger from "./logger";
+import logger, { Level } from "./logger";
 
 declare global {
 	interface Function {
@@ -9,6 +9,11 @@ declare global {
 /** @private */
 interface Constructor<Instance extends object> extends NewableFunction {
 	new (...args: unknown[]): Instance;
+}
+
+/** @private */
+interface LoggedParams {
+	level?: Level;
 }
 
 /** @private */
@@ -43,7 +48,9 @@ function toCall(key: PropertyKey, args: unknown[]): string {
 }
 
 // FIXME: very poorly typed
-export default function Logged<Instance extends object>(): MethodDecorator {
+export default function Logged<Instance extends object>({
+	level = "info",
+}: LoggedParams = {}): MethodDecorator {
 	return (target, key, descriptor): void => {
 		if (descriptor.value == null)
 			return;
@@ -60,7 +67,7 @@ export default function Logged<Instance extends object>(): MethodDecorator {
 
 		const method = descriptor.value as unknown as Function;
 		const logged: Function = function (this: typeof context, ...args) {
-			logger.debug(`Calling: ${logPrefix + toCall(key, args)}`);
+			logger.log(level, `Calling: ${logPrefix + toCall(key, args)}`);
 			return method.apply(this, args);
 		};
 
