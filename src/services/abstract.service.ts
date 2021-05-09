@@ -49,6 +49,10 @@ namespace Service {
 
 	export class ValueNotFoundError extends Error {
 	}
+
+	export abstract class ValueNotUniqueError extends Error {
+		statusCode = 400;
+	}
 }
 
 export default Service;

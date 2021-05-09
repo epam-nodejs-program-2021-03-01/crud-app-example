@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, UniqueConstraintError } from "sequelize";
 import User, { UserType, UserTypeCreation } from "../db/models/user";
 import Service from "./abstract.service";
 
@@ -38,9 +38,16 @@ export default class UserService extends Service<User> {
 	}
 
 	async create(props: UserTypeCreation): Promise<UserType> {
-		const record = await User.create(props);
+		try {
+			const record = await User.create(props);
 
-		return record.get();
+			return record.get();
+		} catch (error: unknown) {
+			if (error instanceof UniqueConstraintError)
+				throw new UserNotUniqueError(props.login);
+
+			throw error;
+		}
 	}
 
 	async delete(id: string): Promise<UserType> {
@@ -53,5 +60,11 @@ export default class UserService extends Service<User> {
 export class UserNotFoundError extends Service.ValueNotFoundError {
 	constructor(userID: string) {
 		super(`User "${userID}" was not found`);
+	}
+}
+
+export class UserNotUniqueError extends Service.ValueNotUniqueError {
+	constructor(userLogin: string) {
+		super(`User with login "${userLogin}" already exists`);
 	}
 }
