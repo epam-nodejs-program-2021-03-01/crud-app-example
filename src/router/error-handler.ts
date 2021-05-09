@@ -60,10 +60,28 @@ function createErrorMessage(error: unknown, req: Parameters<RequestHandler>[0]):
 	return `Request "${req.method} ${req.originalUrl}" failed`;
 }
 
+/** @private */
+function logError(error: unknown): void {
+	let message: unknown;
+
+	if (error instanceof CelebrateError)
+		message = createDetailsFromCelebrateError(error)
+			.map(({ description }) => description)
+			.join(", ");
+
+	else if (error instanceof Service.Error)
+		message = `${error.name} (status ${error.statusCode}): ${error.message}`;
+
+	else
+		message = error;
+
+	logger.error(message);
+}
+
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const errorHandler = (): ErrorRequestHandler => async (error: unknown, req, res, next) => {
-	logger.error(error);
+	logError(error);
 
 	const { statusCode, details } = createErrorResponseData(error);
 
