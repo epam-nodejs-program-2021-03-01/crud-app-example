@@ -85,6 +85,10 @@ const errorHandler = (): ErrorRequestHandler => async (error: unknown, req, res,
 
 	const { statusCode, details } = createErrorResponseData(error);
 
+	details.push({
+		description: `Request ID: ${req.id}`,
+	});
+
 	res.status(statusCode).json({
 		message: createErrorMessage(error, req),
 		details,
