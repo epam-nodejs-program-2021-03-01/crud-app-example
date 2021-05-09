@@ -19,6 +19,7 @@ abstract class Service<
 > {
 	protected abstract getRecord(id: string): Promise<M>;
 
+	@Logged({ level: "debug" })
 	protected async updateAnyProps(id: string, props: Service.AnyProps<ValueType>): Promise<M> {
 		const record = await this.getRecord(id);
 

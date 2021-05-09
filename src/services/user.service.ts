@@ -9,6 +9,7 @@ interface FindQuery extends Service.FindQuery {
 }
 
 export default class UserService extends Service<User> {
+	@Logged({ level: "debug" })
 	protected async getRecord(id: string): Promise<User> {
 		const record = await User.findOne({
 			where: {
