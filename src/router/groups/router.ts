@@ -1,6 +1,7 @@
 import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import GroupService from "../../services/group.service";
+import queryHasFlag from "../query-has-flag";
 import { getGroup, createGroup, updateGroup, addUsers, removeUsers } from "./validation";
 
 /** @private */
@@ -35,7 +36,7 @@ router.route("/:id")
 		async (req: typeof getGroup.request, res) => {
 			const groupID = req.params.id;
 			const group = await groupService.get(groupID, {
-				includeUsers: "users" in req.query && req.query.users !== "0" && req.query.users !== "false",
+				includeUsers: queryHasFlag(req.query, "users"),
 			});
 
 			res.json(group);
