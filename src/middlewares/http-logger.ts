@@ -8,6 +8,7 @@ interface HttpLoggerParams {
 }
 
 morgan.token("id", (req: Request) => req.id);
+morgan.format("main", ":method :url :id - :status :response-time ms");
 
 /** @public */
 const httpLogger = ({
