@@ -32,11 +32,17 @@ function toName(key: PropertyKey): string {
 }
 
 /** @private */
-function toArgs(values: unknown[]): string {
-	const strings = values.map((arg) => JSON.stringify(arg));
-	const args = strings.join(", ");
+function stringifyArg(value: unknown, index: number): string {
+	try {
+		return JSON.stringify(value);
+	} catch (error) {
+		return `$${index + 1}`;
+	}
+}
 
-	return args;
+/** @private */
+function toArgs(values: unknown[]): string {
+	return values.map(stringifyArg).join(", ");
 }
 
 /** @private */
