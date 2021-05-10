@@ -18,14 +18,14 @@ interface RequestDescription {
 }
 
 /** @private */
-interface AuthedParams {
+interface AuthParams {
 	skipRequests?: RequestDescription[];
 }
 
 /** @private */
 const authService = new AuthService();
 
-export default function authed({ skipRequests = [] }: AuthedParams = {}): RequestHandler {
+export default function auth({ skipRequests = [] }: AuthParams = {}): RequestHandler {
 	const skipped = new Set<string>();
 
 	for (const { method, path } of skipRequests)

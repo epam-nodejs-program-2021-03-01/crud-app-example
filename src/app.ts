@@ -3,7 +3,7 @@ import requestID from "express-request-id";
 import cors from "cors";
 import httpLogger from "./middlewares/http-logger";
 import errorHandler from "./middlewares/error-handler";
-import authed from "./middlewares/authed";
+import auth from "./middlewares/auth";
 import router from "./router";
 
 declare global {
@@ -26,7 +26,7 @@ app.use(cors({
 	origin: "*",
 }));
 
-app.use(authed({
+app.use(auth({
 	skipRequests: [
 		{ method: "POST", path: "/auth" },
 	],
