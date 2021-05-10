@@ -3,6 +3,7 @@ import requestID from "express-request-id";
 import httpLogger from "./middlewares/http-logger";
 import errorHandler from "./middlewares/error-handler";
 import authed from "./middlewares/authed";
+import errorHandler from "./middlewares/error-handler";
 import router from "./router";
 
 declare global {
