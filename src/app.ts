@@ -27,9 +27,7 @@ app.use(cors({
 }));
 
 app.use(auth({
-	skipRequests: [
-		{ method: "POST", path: "/auth" },
-	],
+	skipRequests: [ "POST /auth" ],
 }));
 
 app.use("/", router);
