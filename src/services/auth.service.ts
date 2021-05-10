@@ -1,3 +1,4 @@
+import type { Request } from "express";
 import ms from "ms";
 import jwt from "jsonwebtoken";
 import Logged from "../log/logged.decorator";
@@ -22,6 +23,9 @@ interface IssueTokenParams<Data extends object> {
 
 /** @private */
 const secret = process.env.JWT_TOKEN_SECRET;
+
+/** @private */
+const jwtBearerTokenPattern = /^Bearer [\w=-]+\.[\w=-]+(?:\.[\w/.+=-]+)?$/;
 
 /** @private */
 function sec(msec: number): number {
@@ -70,6 +74,27 @@ export default class AuthService extends Service {
 	}
 
 	@Logged()
+	getToken(req: Request): Token {
+		const auth = req.header("Authorization");
+
+		if (!auth)
+			throw new AuthHeaderMissingError();
+
+		const [ type, token ] = auth.split(" ");
+
+		if (type !== "Bearer")
+			throw new AuthHeaderUnknownTypeError(type);
+
+		if (!token)
+			throw new AuthHeaderMissingError();
+
+		if (!jwtBearerTokenPattern.test(token))
+			throw new AuthHeaderInvalidValueError(token);
+
+		return token as Token;
+	}
+
+	@Logged()
 	getPayload(token: Token): unknown {
 		try {
 			return jwt.verify(token, secret, { clockTolerance: 1 });
@@ -82,6 +107,30 @@ export default class AuthService extends Service {
 
 			throw error;
 		}
+	}
+}
+
+export class AuthHeaderMissingError extends Service.Error {
+	statusCode = 400;
+
+	constructor() {
+		super('The "Authorization" header is missing in the request, or its value is empty');
+	}
+}
+
+export class AuthHeaderUnknownTypeError extends Service.Error {
+	statusCode = 400;
+
+	constructor(type: string) {
+		super(`Invalid type of "Authorization" token: "${type}" (expected "Bearer")`);
+	}
+}
+
+export class AuthHeaderInvalidValueError extends Service.Error {
+	statusCode = 400;
+
+	constructor(token: string) {
+		super(`Invalid "Authorization" header value: "${token}" (expected a JWT token)`);
 	}
 }
 
