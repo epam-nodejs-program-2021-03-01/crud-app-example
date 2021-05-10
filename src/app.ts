@@ -1,5 +1,6 @@
 import express from "express";
 import requestID from "express-request-id";
+import cors from "cors";
 import httpLogger from "./middlewares/http-logger";
 import errorHandler from "./middlewares/error-handler";
 import authed from "./middlewares/authed";
@@ -20,6 +21,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(requestID());
 app.use(httpLogger());
+
+app.use(cors({
+	origin: "*",
+}));
 
 app.use(authed({
 	skipRequests: [
