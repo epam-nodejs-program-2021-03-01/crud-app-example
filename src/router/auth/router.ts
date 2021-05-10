@@ -9,9 +9,12 @@ const router = Router();
 const authService = new AuthService();
 
 router.route("/")
-	.all(allowMethods("GET"))
-	.get((req, res) => {
-		const issue = authService.issueToken();
+	.all(allowMethods("POST"))
+	.post((req, res) => {
+		const issue = authService.issueToken({
+			data: req.body,
+			lifespan: req.query.lifespan as string,
+		});
 
 		res.json(issue);
 	});
