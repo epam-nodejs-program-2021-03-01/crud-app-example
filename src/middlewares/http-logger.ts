@@ -13,7 +13,7 @@ morgan.format("main", ":method :url :id - :status :response-time ms");
 /** @public */
 const httpLogger = ({
 	level = "info",
-}: HttpLoggerParams = {}): RequestHandler => morgan(":method :url :id - :status :response-time ms", {
+}: HttpLoggerParams = {}): RequestHandler => morgan("main", {
 	stream: {
 		write(log) {
 			logger.log(level, log.replace(/\n$/, ""));
