@@ -54,7 +54,8 @@ Notice that any push to non-development environment branch automatically trigger
 
 ### Auth
 
-- `GET /auth` – issue new auth token
+- `POST /auth` – issue new auth token (takes request body as the payload)
+	- `POST /auth?lifespan=<lifespan|"1 day"|"4h"...>` – issue new auth token that expires after the given time interval
 
 ### Users
 
