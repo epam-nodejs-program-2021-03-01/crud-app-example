@@ -1,6 +1,7 @@
 import express from "express";
 import requestID from "express-request-id";
 import httpLogger from "./middlewares/http-logger";
+import errorHandler from "./middlewares/error-handler";
 import router from "./router";
 
 declare global {
@@ -20,5 +21,7 @@ app.use(requestID());
 app.use(httpLogger());
 
 app.use("/", router);
+
+app.use(errorHandler());
 
 export default app;
