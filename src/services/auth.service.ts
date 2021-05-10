@@ -25,7 +25,7 @@ interface IssueTokenParams<Data extends object> {
 const secret = process.env.JWT_TOKEN_SECRET;
 
 /** @private */
-const jwtBearerTokenPattern = /^Bearer [\w=-]+\.[\w=-]+(?:\.[\w/.+=-]+)?$/;
+const jwtTokenPattern = /^[\w=-]+\.[\w=-]+(?:\.[\w/.+=-]+)?$/;
 
 /** @private */
 function sec(msec: number): number {
@@ -88,7 +88,7 @@ export default class AuthService extends Service {
 		if (!token)
 			throw new AuthHeaderMissingError();
 
-		if (!jwtBearerTokenPattern.test(token))
+		if (!jwtTokenPattern.test(token))
 			throw new AuthHeaderInvalidValueError(token);
 
 		return token as Token;
