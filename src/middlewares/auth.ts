@@ -1,4 +1,4 @@
-import type { RequestHandler } from "express";
+import type { Request, RequestHandler } from "express";
 import type { HttpMethod } from "express-allow-methods";
 import AuthService, { Token } from "../services/auth.service";
 
@@ -12,10 +12,10 @@ declare global {
 }
 
 /** @private */
-interface RequestDescription {
-	method: HttpMethod;
-	path: string;
-}
+type Path = `/${string}`;
+
+/** @private */
+type RequestDescription = `${HttpMethod} ${Path}`;
 
 /** @private */
 interface AuthParams {
@@ -25,14 +25,16 @@ interface AuthParams {
 /** @private */
 const authService = new AuthService();
 
-export default function auth({ skipRequests = [] }: AuthParams = {}): RequestHandler {
-	const skipped = new Set<string>();
+/** @private */
+function describe(req: Request): RequestDescription {
+	return `${req.method} ${req.path}` as RequestDescription;
+}
 
-	for (const { method, path } of skipRequests)
-		skipped.add(`${method} ${path}`);
+export default function auth({ skipRequests = [] }: AuthParams = {}): RequestHandler {
+	const skipped = new Set<RequestDescription>(skipRequests);
 
 	return (req, res, next): void => {
-		if (!skipped.has(`${req.method} ${req.path}`)) {
+		if (!skipped.has(describe(req))) {
 			const token = authService.getToken(req);
 
 			req.token = token;
