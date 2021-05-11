@@ -6,7 +6,7 @@ declare global {
 	namespace Express {
 		interface Request {
 			token?: Token;
-			payload?: unknown;
+			tokenPayload?: unknown;
 		}
 	}
 }
@@ -38,7 +38,7 @@ export default function auth({ skipRequests = [] }: AuthParams = {}): RequestHan
 			const token = authService.getToken(req);
 
 			req.token = token;
-			req.payload = authService.getPayload(token);
+			req.tokenPayload = authService.getPayload(token);
 		}
 
 		next();
