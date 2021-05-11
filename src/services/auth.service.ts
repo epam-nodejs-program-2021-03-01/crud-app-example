@@ -111,7 +111,7 @@ export default class AuthService extends Service {
 }
 
 export class AuthHeaderMissingError extends Service.Error {
-	statusCode = 400;
+	statusCode = 401;
 
 	constructor() {
 		super('The "Authorization" header is missing in the request, or its value is empty');
@@ -119,7 +119,7 @@ export class AuthHeaderMissingError extends Service.Error {
 }
 
 export class AuthHeaderUnknownTypeError extends Service.Error {
-	statusCode = 400;
+	statusCode = 401;
 
 	constructor(type: string) {
 		super(`Invalid type of "Authorization" token: "${type}" (expected "Bearer")`);
@@ -127,7 +127,7 @@ export class AuthHeaderUnknownTypeError extends Service.Error {
 }
 
 export class AuthHeaderInvalidValueError extends Service.Error {
-	statusCode = 400;
+	statusCode = 401;
 
 	constructor(token: string) {
 		super(`Invalid "Authorization" header value: "${token}" (expected a JWT token)`);
@@ -143,7 +143,7 @@ export class AuthInvalidLifespanError extends Service.Error {
 }
 
 export class AuthTokenExpiredError extends Service.Error {
-	statusCode = 401;
+	statusCode = 403;
 
 	constructor(expiration: Date) {
 		super(`The supplied token has already expired (expiration date: ${expiration.toUTCString()})`);
@@ -151,7 +151,7 @@ export class AuthTokenExpiredError extends Service.Error {
 }
 
 export class AuthUnknownError extends Service.Error {
-	statusCode = 403;
+	statusCode = 401;
 
 	constructor(
 		public cause: jwt.JsonWebTokenError,
