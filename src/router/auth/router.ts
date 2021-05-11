@@ -8,7 +8,7 @@ const router = Router();
 /** @private */
 const authService = new AuthService();
 
-router.route("/")
+router.route("/token")
 	.all(allowMethods("POST"))
 	.post((req, res) => {
 		const issue = authService.issueToken({
