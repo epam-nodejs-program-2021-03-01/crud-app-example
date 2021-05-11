@@ -59,23 +59,23 @@ Notice that any push to non-development environment branch automatically trigger
 
 ### Users
 
-- `GET /users` – get list of all users
-	- `GET /users?login-substring=<string>` – get list of all users, whose login contains the given substring
-	- `GET /users?limit=<integer>` – get list of all users, limiting the results to the given value
-- `POST /users` – create new user
-- `GET /users/:id` – get user by their ID
-- `PATCH /users/:id` – update user by their ID
-- `DELETE /users/:id` – delete user by their ID
+- `GET /users` 🔐 – get list of all users
+	- `GET /users?login-substring=<string>` 🔐 – get list of all users, whose login contains the given substring
+	- `GET /users?limit=<integer>` 🔐 – get list of all users, limiting the results to the given value
+- `POST /users` 🔐 – create new user
+- `GET /users/:id` 🔐 – get user by their ID
+- `PATCH /users/:id` 🔐 – update user by their ID
+- `DELETE /users/:id` 🔐 – delete user by their ID
 
 ### Groups
 
-- `GET /groups` – get list of all groups
-- `POST /groups` – create new group
-- `GET /groups/:id` – get group by its ID
-	- `GET /groups/:id?users=<any>` – get group by its ID, include information about members
-	- `GET /groups/:id?users=<"0"|"false">` – get group by its ID, without information about members
-- `PATCH /groups/:id` – update group by its ID
-- `DELETE /groups/:id` – delete group by its ID
-- `GET /groups/:id/users` – get a list of all members of the group
-- `PUT /groups/:id/users` – add members to the group
-- `DELETE /groups/:id/users` – remove members from the group
+- `GET /groups` 🔐 – get list of all groups
+- `POST /groups` 🔐 – create new group
+- `GET /groups/:id` 🔐 – get group by its ID
+	- `GET /groups/:id?users=<any>` 🔐 – get group by its ID, include information about members
+	- `GET /groups/:id?users=<"0"|"false">` 🔐 – get group by its ID, without information about members
+- `PATCH /groups/:id` 🔐 – update group by its ID
+- `DELETE /groups/:id` 🔐 – delete group by its ID
+- `GET /groups/:id/users` 🔐 – get a list of all members of the group
+- `PUT /groups/:id/users` 🔐 – add members to the group
+- `DELETE /groups/:id/users` 🔐 – remove members from the group
