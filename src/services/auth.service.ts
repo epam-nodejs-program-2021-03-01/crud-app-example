@@ -145,8 +145,13 @@ export class AuthInvalidLifespanError extends Service.Error {
 export class AuthTokenExpiredError extends Service.Error {
 	statusCode = 403;
 
+	@Logged({ level: "debug" })
+	private static calcTimeAgo(then: Date): string {
+		return ms(Date.now() - then.getTime(), { long: true });
+	}
+
 	constructor(expiration: Date) {
-		super(`The supplied token has already expired (expiration date: ${expiration.toUTCString()})`);
+		super(`The supplied token has expired ${AuthTokenExpiredError.calcTimeAgo(expiration)} ago`);
 	}
 }
 
