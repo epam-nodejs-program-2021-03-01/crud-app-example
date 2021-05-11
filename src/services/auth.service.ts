@@ -35,7 +35,7 @@ function sec(msec: number): number {
 export default class AuthService extends Service {
 	@Logged({ level: "debug" })
 	private validateLifespan(lifespan: string | undefined): asserts lifespan is string {
-		if (lifespan == null)
+		if (!lifespan)
 			throw new AuthInvalidLifespanError(String(lifespan));
 
 		const lifespanMsec = ms(lifespan);
