@@ -103,7 +103,7 @@ export default class AuthService extends Service {
 				throw new AuthTokenExpiredError(error.expiredAt);
 
 			if (error instanceof jwt.JsonWebTokenError)
-				throw new AuthUnknownError(error);
+				throw new AuthJwtError(error);
 
 			throw error;
 		}
@@ -150,12 +150,12 @@ export class AuthTokenExpiredError extends Service.Error {
 	}
 }
 
-export class AuthUnknownError extends Service.Error {
+export class AuthJwtError extends Service.Error {
 	statusCode = 401;
 
 	constructor(
 		public cause: jwt.JsonWebTokenError,
 	) {
-		super("Unknown authorization error");
+		super(`Authorization error: ${cause.message}`);
 	}
 }
