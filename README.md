@@ -121,11 +121,11 @@ Notice that any push to non-development environment branch automatically trigger
 
 	Verify the source code by running all test suites.
 
-- `npm run test:unit`
+- `npm run test:u`
 
 	Verify the source code by running unit tests.
 
-- `npm run test:integration`
+- `npm run test:i`
 
 	Verify the source code by running integration tests.
 
