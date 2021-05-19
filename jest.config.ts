@@ -1,7 +1,9 @@
+import { resolve } from "path";
+
 export default {
 	// Run tests from one or more projects
 	projects: [
-		"jest.config.unit.ts",
-		"jest.config.integration.ts",
+		resolve(__dirname, "test/config.unit.ts"),
+		resolve(__dirname, "test/config.integration.ts"),
 	],
 };
