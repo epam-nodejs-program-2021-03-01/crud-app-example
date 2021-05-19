@@ -22,4 +22,8 @@ const logger = winston.createLogger({
 	],
 });
 
+if (process.env.NODE_ENV === "test")
+	for (const transport of logger.transports)
+		transport.silent = true;
+
 export default logger;
