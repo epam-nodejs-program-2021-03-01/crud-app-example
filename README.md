@@ -74,3 +74,51 @@ Notice that any push to non-development environment branch automatically trigger
 - `GET /groups/:id/users` – get a list of all members of the group
 - `PUT /groups/:id/users` – add members to the group
 - `DELETE /groups/:id/users` – remove members from the group
+
+## Scripts
+
+### Build
+
+- `npm run build`
+
+	Builds an output code from the source code. This also runs "pre-" and "postbuild" hooks that help making a cleaner build.
+
+- `npm run clean`
+
+	Prunes the contents of the output directory, – usually, this is needed to remove leftovers from the previous builds.
+
+- `npm run build:only`
+
+	Builds an output code from the source code, without performing any additional file management through the hooks.
+
+### Verify
+
+- `npm run compile`
+
+	Verify that the code is able to be built without actually building it.
+
+- `npm run lint`
+
+	Verify the code-style (run `npm run lint -- --fix` to also attempt auto-fixing the found issues).
+
+- `npm run test`
+
+	Verify the source code by running all test suites.
+
+- `npm run test:unit`
+
+	Verify the source code by running unit tests.
+
+### Run
+
+- `npm run dev`
+
+	_(intended for a local environment)_ Runs the source code of the application.
+
+- `npm run play`
+
+	_(intended for a local environment)_ Runs the code in the playground file.
+
+- `npm start`
+
+	_(intended for a remote environment)_ Runs the compiled code of the application (the compiled code must exist prior to that).
