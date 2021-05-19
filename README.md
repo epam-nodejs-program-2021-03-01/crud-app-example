@@ -125,6 +125,10 @@ Notice that any push to non-development environment branch automatically trigger
 
 	Verify the source code by running unit tests.
 
+- `npm run test:integration`
+
+	Verify the source code by running integration tests.
+
 ### Run
 
 - `npm run dev`
