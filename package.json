@@ -16,7 +16,8 @@
     "node": "14.x"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:unit": "jest --config jest.config.unit.ts",
     "clean": "del-cli dist/*",
     "build:only": "tsc --project ./tsconfig.production.json",
     "compile": "npm run build:only -- --noEmit",
@@ -33,6 +34,7 @@
     "@types/cors": "2.8.10",
     "@types/express": "4.17.12",
     "@types/express-request-id": "1.4.1",
+    "@types/jest": "26.0.23",
     "@types/jsonwebtoken": "8.5.1",
     "@types/morgan": "1.9.2",
     "@types/ms": "0.7.31",
@@ -42,7 +44,9 @@
     "@typescript-eslint/parser": "4.27.0",
     "del-cli": "3.0.1",
     "eslint": "7.28.0",
+    "jest": "26.6.3",
     "nodemon": "2.0.7",
+    "ts-jest": "26.5.6",
     "ts-node": "10.0.0",
     "typescript": "4.3.2"
   },
