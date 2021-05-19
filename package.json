@@ -17,8 +17,8 @@
   },
   "scripts": {
     "test": "jest",
-    "test:unit": "jest --config test/config.unit.ts",
-    "test:integration": "jest --config test/config.integration.ts",
+    "test:u": "jest --config test/config.unit.ts",
+    "test:i": "jest --config test/config.integration.ts",
     "clean": "del-cli dist/*",
     "prebuild": "npm run clean",
     "build": "tsc --project ./tsconfig.production.json",
