@@ -1,3 +1,5 @@
+import { resolve } from "path";
+
 export const config = {
 	// A preset that is used as a base for Jest's configuration
 	preset: "ts-jest",
@@ -8,7 +10,7 @@ export const config = {
 	],
 
 	// The root directory that Jest should scan for tests and modules within
-	rootDir: __dirname,
+	rootDir: resolve(__dirname, ".."),
 
 	// ***
 

@@ -1,0 +1,1 @@
+Note: this folder is intended for test-related meta-files (such as test configs, setup/teardown files, etc.), but _not_ for the testing files themselves (`*.test.ts` / `*.spec.ts`). The later should be put in `/src` folder, next to the subject modules (e.g, `/src/router/*/router.*.test.ts`).
