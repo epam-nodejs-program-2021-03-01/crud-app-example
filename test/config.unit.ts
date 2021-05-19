@@ -1,7 +1,7 @@
 import { config } from "./config.common";
 
 export default Object.assign({}, config, {
-	displayName: "Unit test",
+	displayName: "Unit",
 
 	// The glob patterns Jest uses to detect test files
 	testMatch: [
