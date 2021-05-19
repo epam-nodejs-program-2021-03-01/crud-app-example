@@ -4,6 +4,6 @@ import { options } from "./common";
 
 load({
 	...options,
-	path: resolve(__dirname, ".env.local"),
+	path: resolve(__dirname, process.env.NODE_ENV === "test" ? ".env.local-test" : ".env.local"),
 	silent: false,
 });
