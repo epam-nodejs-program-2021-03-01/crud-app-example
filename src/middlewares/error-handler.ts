@@ -10,7 +10,14 @@ import logger from "../log/logger";
 type Req = Pick<Parameters<RequestHandler>[0], "id" | "method" | "originalUrl">;
 
 /** @private */
+type DetailKind =
+	| "message"
+	| "request_id"
+	;
+
+/** @private */
 interface Detail {
+	kind: DetailKind;
 	description: string;
 }
 
@@ -29,6 +36,7 @@ function createDetailsFromCelebrateError(error: CelebrateError): Detail[] {
 
 	for (const [ scope, joiError ] of error.details)
 		details.push({
+			kind: "message",
 			description: `(in ${scope}) ${joiError.message}`,
 		});
 
@@ -42,6 +50,7 @@ function createErrorResponseData(error: unknown): ErrorResponseData {
 			statusCode: error.statusCode,
 			details: [
 				{
+					kind: "message",
 					description: error.message,
 				},
 			],
@@ -58,6 +67,7 @@ function createErrorResponseData(error: unknown): ErrorResponseData {
 		statusCode: 500,
 		details: [
 			{
+				kind: "message",
 				description: "Unknown error occurred",
 			},
 		],
@@ -74,6 +84,7 @@ function createErrorResponse(error: unknown, req: Req): ErrorResponse {
 	const { statusCode, details } = createErrorResponseData(error);
 
 	details.push({
+		kind: "request_id",
 		description: `Request ID: ${req.id}`,
 	});
 
@@ -90,6 +101,7 @@ function logError(error: unknown): void {
 
 	if (error instanceof CelebrateError)
 		message = createDetailsFromCelebrateError(error)
+			.filter(({ kind }) => kind === "message")
 			.map(({ description }) => description)
 			.join(", ");
 
