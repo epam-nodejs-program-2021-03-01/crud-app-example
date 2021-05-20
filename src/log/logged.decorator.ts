@@ -24,7 +24,7 @@ interface ToArgsParams {
 /** @private */
 interface LoggedParams {
 	level?: Level;
-	replaceArgs?: string | ArgReplacement;
+	hideArgs?: boolean;
 }
 
 /** @private */
@@ -67,11 +67,12 @@ function toArgs(values: unknown[], {
 // FIXME: very poorly typed
 export default function Logged<Instance extends object>({
 	level = "info",
-	replaceArgs,
+	hideArgs = false,
 }: LoggedParams = {}): MethodDecorator {
-	const toArgsParams: ToArgsParams = {
-		replaceValues: typeof replaceArgs === "string" ? (() => replaceArgs) : replaceArgs,
-	};
+	const toArgsParams: ToArgsParams = {};
+
+	if (hideArgs)
+		toArgsParams.replaceValues = map.toIndex;
 
 	return (target, key, descriptor): void => {
 		if (descriptor.value == null)
