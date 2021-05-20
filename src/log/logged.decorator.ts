@@ -45,14 +45,6 @@ function toArgs(values: unknown[]): string {
 	return values.map(stringifyArg).join(", ");
 }
 
-/** @private */
-function toCall(key: PropertyKey, args: unknown[]): string {
-	const name = toName(key);
-	const values = toArgs(args);
-
-	return `${name}(${values})`;
-}
-
 // FIXME: very poorly typed
 export default function Logged<Instance extends object>({
 	level = "info",
@@ -73,7 +65,10 @@ export default function Logged<Instance extends object>({
 
 		const method = descriptor.value as unknown as Function;
 		const logged: Function = function (this: typeof context, ...args) {
-			logger.log(level, `Calling: ${logPrefix + toCall(key, args)}`);
+			const callName = toName(key);
+			const callArgs = toArgs(args);
+
+			logger.log(level, `Calling: ${logPrefix + callName}(${callArgs})`);
 			return method.apply(this, args);
 		};
 
