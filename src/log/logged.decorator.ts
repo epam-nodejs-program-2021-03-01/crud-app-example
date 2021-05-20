@@ -24,7 +24,7 @@ interface ToArgsParams {
 /** @private */
 interface LoggedParams {
 	level?: Level;
-	replaceArgs?: ArgReplacement;
+	replaceArgs?: string | ArgReplacement;
 }
 
 /** @private */
@@ -43,12 +43,12 @@ function toName(key: PropertyKey): string {
 }
 
 /** @private */
-const replacements: Record<"stringify" | "toIndex", ArgReplacement> = {
+const map: Record<"stringify" | "toIndex", ArgReplacement> = {
 	stringify(value, index) {
 		try {
 			return JSON.stringify(value);
 		} catch (error) {
-			return replacements.toIndex(value, index);
+			return map.toIndex(value, index);
 		}
 	},
 
@@ -59,7 +59,7 @@ const replacements: Record<"stringify" | "toIndex", ArgReplacement> = {
 
 /** @private */
 function toArgs(values: unknown[], {
-	replaceValues = replacements.stringify,
+	replaceValues = map.stringify,
 }: ToArgsParams = {}): string {
 	return values.map(replaceValues).join(", ");
 }
@@ -69,7 +69,9 @@ export default function Logged<Instance extends object>({
 	level = "info",
 	replaceArgs,
 }: LoggedParams = {}): MethodDecorator {
-	const toArgsParams: ToArgsParams = { replaceValues: replaceArgs };
+	const toArgsParams: ToArgsParams = {
+		replaceValues: typeof replaceArgs === "string" ? (() => replaceArgs) : replaceArgs,
+	};
 
 	return (target, key, descriptor): void => {
 		if (descriptor.value == null)
