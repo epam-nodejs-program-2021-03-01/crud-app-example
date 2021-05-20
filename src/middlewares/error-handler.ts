@@ -4,15 +4,24 @@ import Service from "../services/abstract.service";
 import logger from "../log/logger";
 
 /** @private */
+// This type does not require all of the properties of Request
+// in order to allow providing mocked request / custom object
+// without getting a compilation error due to missing properties
+type Req = Pick<Parameters<RequestHandler>[0], "id" | "method" | "originalUrl">;
+
+/** @private */
 interface Detail {
 	description: string;
 }
 
-/** @private */
-interface ErrorResponseData {
+export interface ErrorResponse {
+	message: string;
 	statusCode: number;
 	details: Detail[];
 }
+
+/** @private */
+type ErrorResponseData = Omit<ErrorResponse, "message">;
 
 /** @private */
 function createDetailsFromCelebrateError(error: CelebrateError): Detail[] {
@@ -56,8 +65,23 @@ function createErrorResponseData(error: unknown): ErrorResponseData {
 }
 
 /** @private */
-function createErrorMessage(error: unknown, req: Parameters<RequestHandler>[0]): string {
+function createErrorMessage(error: unknown, req: Req): string {
 	return `Request "${req.method} ${req.originalUrl}" failed`;
+}
+
+/** @private */
+function createErrorResponse(error: unknown, req: Req): ErrorResponse {
+	const { statusCode, details } = createErrorResponseData(error);
+
+	details.push({
+		description: `Request ID: ${req.id}`,
+	});
+
+	return {
+		message: createErrorMessage(error, req),
+		details,
+		statusCode,
+	};
 }
 
 /** @private */
@@ -83,17 +107,9 @@ function logError(error: unknown): void {
 const errorHandler = (): ErrorRequestHandler => async (error: unknown, req, res, next) => {
 	logError(error);
 
-	const { statusCode, details } = createErrorResponseData(error);
+	const response = createErrorResponse(error, req);
 
-	details.push({
-		description: `Request ID: ${req.id}`,
-	});
-
-	res.status(statusCode).json({
-		message: createErrorMessage(error, req),
-		details,
-		statusCode,
-	});
+	res.status(response.statusCode).json(response);
 };
 
 export default errorHandler;
