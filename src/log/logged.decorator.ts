@@ -12,13 +12,19 @@ interface Constructor<Instance extends object> extends NewableFunction {
 }
 
 /** @private */
-interface Replacement {
+interface ArgReplacement {
 	(value: unknown, index: number): string;
+}
+
+/** @private */
+interface ToArgsParams {
+	replaceValues?: ArgReplacement;
 }
 
 /** @private */
 interface LoggedParams {
 	level?: Level;
+	replaceArgs?: ArgReplacement;
 }
 
 /** @private */
@@ -37,7 +43,7 @@ function toName(key: PropertyKey): string {
 }
 
 /** @private */
-const replacements: Record<"stringify" | "toIndex", Replacement> = {
+const replacements: Record<"stringify" | "toIndex", ArgReplacement> = {
 	stringify(value, index) {
 		try {
 			return JSON.stringify(value);
@@ -52,14 +58,19 @@ const replacements: Record<"stringify" | "toIndex", Replacement> = {
 } as const;
 
 /** @private */
-function toArgs(values: unknown[]): string {
-	return values.map(replacements.stringify).join(", ");
+function toArgs(values: unknown[], {
+	replaceValues = replacements.stringify,
+}: ToArgsParams = {}): string {
+	return values.map(replaceValues).join(", ");
 }
 
 // FIXME: very poorly typed
 export default function Logged<Instance extends object>({
 	level = "info",
+	replaceArgs,
 }: LoggedParams = {}): MethodDecorator {
+	const toArgsParams: ToArgsParams = { replaceValues: replaceArgs };
+
 	return (target, key, descriptor): void => {
 		if (descriptor.value == null)
 			return;
@@ -77,7 +88,7 @@ export default function Logged<Instance extends object>({
 		const method = descriptor.value as unknown as Function;
 		const logged: Function = function (this: typeof context, ...args) {
 			const callName = toName(key);
-			const callArgs = toArgs(args);
+			const callArgs = toArgs(args, toArgsParams);
 
 			logger.log(level, `Calling: ${logPrefix + callName}(${callArgs})`);
 			return method.apply(this, args);
