@@ -12,6 +12,11 @@ interface Constructor<Instance extends object> extends NewableFunction {
 }
 
 /** @private */
+interface Replacement {
+	(value: unknown, index: number): string;
+}
+
+/** @private */
 interface LoggedParams {
 	level?: Level;
 }
@@ -32,17 +37,23 @@ function toName(key: PropertyKey): string {
 }
 
 /** @private */
-function stringifyArg(value: unknown, index: number): string {
-	try {
-		return JSON.stringify(value);
-	} catch (error) {
-		return `$${index + 1}`;
-	}
-}
+const replacements: Record<"stringify" | "toIndex", Replacement> = {
+	stringify(value, index) {
+		try {
+			return JSON.stringify(value);
+		} catch (error) {
+			return replacements.toIndex(value, index);
+		}
+	},
+
+	toIndex(value, index) {
+		return `#${index}`;
+	},
+} as const;
 
 /** @private */
 function toArgs(values: unknown[]): string {
-	return values.map(stringifyArg).join(", ");
+	return values.map(replacements.stringify).join(", ");
 }
 
 // FIXME: very poorly typed
