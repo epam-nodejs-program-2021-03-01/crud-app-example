@@ -1,9 +1,12 @@
 import type { RequestHandler } from "express";
-import AuthService from "../../services/auth.service";
+import type AuthService from "../../services/auth.service";
 
-export default function logout(): RequestHandler[] {
-	const authService = new AuthService();
+/** @private */
+interface Deps {
+	authService: AuthService;
+}
 
+export default function logout({ authService }: Deps): RequestHandler[] {
 	return [
 		async (req, res) => {
 			const auth = req.header("authorization");

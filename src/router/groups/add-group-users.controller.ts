@@ -1,9 +1,14 @@
 import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
-import GroupService from "../../services/group.service";
+import type GroupService from "../../services/group.service";
 import RequestValidation, { Joi } from "../request-validation";
 import type WithUserIDs from "./with-user-ids.type";
 import { userIDs } from "./definitions";
+
+/** @private */
+interface Deps {
+	groupService: GroupService;
+}
 
 /** @private */
 const { requestValidator, request } = new RequestValidation<WithUserIDs>({
@@ -12,9 +17,7 @@ const { requestValidator, request } = new RequestValidation<WithUserIDs>({
 	}),
 });
 
-export default function addGroupUsers(): RequestHandler[] {
-	const groupService = new GroupService();
-
+export default function addGroupUsers({ groupService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

@@ -1,9 +1,14 @@
 import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import type { GroupTypeCreation } from "../../db/models/group";
-import GroupService from "../../services/group.service";
+import type GroupService from "../../services/group.service";
 import RequestValidation, { Joi } from "../request-validation";
 import { groupName, groupPermissions } from "./definitions";
+
+/** @private */
+interface Deps {
+	groupService: GroupService;
+}
 
 /** @private */
 const { requestValidator, request } = new RequestValidation<Partial<GroupTypeCreation>>({
@@ -13,9 +18,7 @@ const { requestValidator, request } = new RequestValidation<Partial<GroupTypeCre
 	}),
 });
 
-export default function updateGroup(): RequestHandler[] {
-	const groupService = new GroupService();
-
+export default function updateGroup({ groupService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

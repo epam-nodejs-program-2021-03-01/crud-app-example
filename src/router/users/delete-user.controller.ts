@@ -1,9 +1,12 @@
 import type { RequestHandler } from "express";
-import UserService from "../../services/user.service";
+import type UserService from "../../services/user.service";
 
-export default function deleteUser(): RequestHandler[] {
-	const userService = new UserService();
+/** @private */
+interface Deps {
+	userService: UserService;
+}
 
+export default function deleteUser({ userService }: Deps): RequestHandler[] {
 	return [
 		async (req, res) => {
 			const userID = req.params.id;

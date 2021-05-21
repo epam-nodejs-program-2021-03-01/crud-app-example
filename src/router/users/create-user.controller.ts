@@ -1,9 +1,14 @@
 import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import type { UserTypeCreation } from "../../db/models/user";
-import UserService from "../../services/user.service";
+import type UserService from "../../services/user.service";
 import RequestValidation, { Joi } from "../request-validation";
 import { userAge, userLogin, userPassword } from "./definitions";
+
+/** @private */
+interface Deps {
+	userService: UserService;
+}
 
 /** @private */
 const { requestValidator, request } = new RequestValidation<UserTypeCreation>({
@@ -14,9 +19,7 @@ const { requestValidator, request } = new RequestValidation<UserTypeCreation>({
 	}),
 });
 
-export default function createUser(): RequestHandler[] {
-	const userService = new UserService();
-
+export default function createUser({ userService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

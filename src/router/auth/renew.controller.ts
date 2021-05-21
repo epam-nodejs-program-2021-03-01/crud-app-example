@@ -1,15 +1,18 @@
 import type { RequestHandler } from "express";
-import AuthService from "../../services/auth.service";
+import type AuthService from "../../services/auth.service";
 import RequestValidation, { Joi, Segments } from "../request-validation";
+
+/** @private */
+interface Deps {
+	authService: AuthService;
+}
 
 /** @private */
 const { requestValidator, request } = new RequestValidation<object | undefined>({
 	[Segments.BODY]: Joi.object().optional(),
 });
 
-export default function renew(): RequestHandler[] {
-	const authService = new AuthService();
-
+export default function renew({ authService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

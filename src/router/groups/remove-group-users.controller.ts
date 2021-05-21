@@ -1,8 +1,13 @@
 import RequestValidation, { Joi, Segments } from "../request-validation";
 import type { RequestHandler } from "express";
-import GroupService from "../../services/group.service";
+import type GroupService from "../../services/group.service";
 import { userIDs } from "./definitions";
 import type WithUserIDs from "./with-user-ids.type";
+
+/** @private */
+interface Deps {
+	groupService: GroupService;
+}
 
 /** @private */
 const { requestValidator, request } = new RequestValidation<WithUserIDs>({
@@ -11,9 +16,7 @@ const { requestValidator, request } = new RequestValidation<WithUserIDs>({
 	}),
 });
 
-export default function removeGroupUsers(): RequestHandler[] {
-	const groupService = new GroupService();
-
+export default function removeGroupUsers({ groupService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

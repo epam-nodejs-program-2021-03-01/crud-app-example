@@ -1,9 +1,14 @@
 import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
-import GroupService from "../../services/group.service";
+import type GroupService from "../../services/group.service";
 import queryHasFlag from "../query-has-flag";
 import RequestValidation, { Joi } from "../request-validation";
 import { includeUsersFlag } from "./definitions";
+
+/** @private */
+interface Deps {
+	groupService: GroupService;
+}
 
 /** @private */
 interface GetGroupQuery {
@@ -17,9 +22,7 @@ const { requestValidator, request } = new RequestValidation<unknown, GetGroupQue
 	}),
 });
 
-export default function getGroup(): RequestHandler[] {
-	const groupService = new GroupService();
-
+export default function getGroup({ groupService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

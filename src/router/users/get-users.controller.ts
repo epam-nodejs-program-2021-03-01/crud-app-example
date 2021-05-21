@@ -1,7 +1,12 @@
 import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
-import UserService from "../../services/user.service";
+import type UserService from "../../services/user.service";
 import RequestValidation, { Joi, definitions } from "../request-validation";
+
+/** @private */
+interface Deps {
+	userService: UserService;
+}
 
 /** @private */
 interface GetUsersQuery {
@@ -21,9 +26,7 @@ const { requestValidator, request } = new RequestValidation<unknown, GetUsersQue
 	}),
 });
 
-export default function getUsers(): RequestHandler[] {
-	const userService = new UserService();
-
+export default function getUsers({ userService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
 		async (req: typeof request, res) => {

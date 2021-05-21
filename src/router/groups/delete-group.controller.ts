@@ -1,9 +1,12 @@
 import type { RequestHandler } from "express";
-import GroupService from "../../services/group.service";
+import type GroupService from "../../services/group.service";
 
-export default function deleteGroup(): RequestHandler[] {
-	const groupService = new GroupService();
+/** @private */
+interface Deps {
+	groupService: GroupService;
+}
 
+export default function deleteGroup({ groupService }: Deps): RequestHandler[] {
 	return [
 		async (req, res) => {
 			const groupID = req.params.id;
