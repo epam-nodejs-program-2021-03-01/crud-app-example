@@ -3,12 +3,12 @@ import type { RequestHandler } from "express";
 import type { UserTypeCreation } from "../../db/models/user";
 import UserService from "../../services/user.service";
 import RequestValidation, { Joi } from "../request-validation";
-import { userAge, userName, userPassword } from "./definitions";
+import { userAge, userLogin, userPassword } from "./definitions";
 
 /** @private */
 const { requestValidator, request } = new RequestValidation<UserTypeCreation>({
 	[Segments.BODY]: Joi.object<UserTypeCreation>({
-		login: userName.required(),
+		login: userLogin.required(),
 		password: userPassword.required(),
 		age: userAge.required(),
 	}),

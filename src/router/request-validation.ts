@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from "express";
-import { celebrator, SchemaOptions } from "celebrate";
+import { celebrator, Joi, SchemaOptions } from "celebrate";
 
 export * from "celebrate";
 
@@ -21,4 +21,15 @@ export default class RequestValidation<
 	constructor(schema: SchemaOptions) {
 		this.requestValidator = createValidator(schema);
 	}
+}
+
+export namespace definitions {
+	export const name = Joi.string()
+		.pattern(/^[a-zA-Z][-a-zA-Z0-9]*$/, { name: "alpha-numeric characters" })
+		.min(1)
+		.max(32);
+	
+	export const naturalNumber = Joi.number()
+		.positive()
+		.integer();
 }

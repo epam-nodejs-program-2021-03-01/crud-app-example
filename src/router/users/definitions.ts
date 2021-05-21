@@ -1,6 +1,6 @@
-import { Joi } from "../request-validation";
+import { Joi, definitions } from "../request-validation";
 
-export { name as userName } from "../definitions";
+export const userLogin = definitions.name;
 
 export const userLoginSubstring = Joi.string()
 	.max(32);

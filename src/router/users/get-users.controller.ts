@@ -1,8 +1,7 @@
 import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import UserService from "../../services/user.service";
-import { naturalNumber } from "../definitions";
-import RequestValidation, { Joi } from "../request-validation";
+import RequestValidation, { Joi, definitions } from "../request-validation";
 
 /** @private */
 interface GetUsersQuery {
@@ -18,7 +17,7 @@ const userLoginSubstring = Joi.string()
 const { requestValidator, request } = new RequestValidation<unknown, GetUsersQuery>({
 	[Segments.QUERY]: Joi.object<GetUsersQuery>({
 		"login-substring": userLoginSubstring.allow(""),
-		limit: naturalNumber.allow(""),
+		limit: definitions.naturalNumber.allow(""),
 	}),
 });
 
