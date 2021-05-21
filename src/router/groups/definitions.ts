@@ -1,4 +1,4 @@
-import Joi from "joi";
+import { Joi } from "../request-validation";
 import { permissions } from "../../db/models/group";
 import { naturalNumber } from "../definitions";
 

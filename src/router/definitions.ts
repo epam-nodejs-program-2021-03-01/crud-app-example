@@ -1,4 +1,4 @@
-import { Joi } from "celebrate";
+import { Joi } from "./request-validation";
 
 export const name = Joi.string()
 	.pattern(/^[a-zA-Z][-a-zA-Z0-9]*$/, { name: "alpha-numeric characters" })
