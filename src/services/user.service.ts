@@ -1,5 +1,6 @@
 import { Op, UniqueConstraintError } from "sequelize";
 import User, { UserType, UserTypeCreation } from "../db/models/user";
+import Logged from "../log/logged.decorator";
 import Service from "./abstract.service";
 
 /** @private */
@@ -8,6 +9,7 @@ interface FindQuery extends Service.FindQuery {
 }
 
 export default class UserService extends Service<User> {
+	@Logged({ level: "debug" })
 	protected async getRecord(id: string): Promise<User> {
 		const record = await User.findOne({
 			where: {
@@ -22,6 +24,7 @@ export default class UserService extends Service<User> {
 		return record;
 	}
 
+	@Logged()
 	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
 		const records = await User.findAll({
 			where: {
@@ -37,6 +40,7 @@ export default class UserService extends Service<User> {
 		return records.map((record) => record.get());
 	}
 
+	@Logged()
 	async create(props: UserTypeCreation): Promise<UserType> {
 		try {
 			const record = await User.create(props);
@@ -50,6 +54,7 @@ export default class UserService extends Service<User> {
 		}
 	}
 
+	@Logged()
 	async delete(id: string): Promise<UserType> {
 		const record = await this.updateAnyProps(id, { isDeleted: true });
 

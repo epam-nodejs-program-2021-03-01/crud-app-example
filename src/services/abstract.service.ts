@@ -1,5 +1,6 @@
 import type { Model } from "sequelize";
 import type Entity from "../db/entity.type";
+import Logged from "../log/logged.decorator";
 
 /** @public */
 namespace Service {
@@ -18,6 +19,7 @@ abstract class Service<
 > {
 	protected abstract getRecord(id: string): Promise<M>;
 
+	@Logged({ level: "debug" })
 	protected async updateAnyProps(id: string, props: Service.AnyProps<ValueType>): Promise<M> {
 		const record = await this.getRecord(id);
 
@@ -27,12 +29,14 @@ abstract class Service<
 	abstract find(query?: Service.FindQuery): Promise<ValueType[]>;
 	abstract create(props: ValueTypeCreation): Promise<ValueType>;
 
+	@Logged()
 	async get(id: string): Promise<ValueType> {
 		const record = await this.getRecord(id);
 
 		return record.get();
 	}
 
+	@Logged()
 	async update(id: string, props: Partial<ValueTypeCreation>): Promise<ValueType> {
 		const record = await this.updateAnyProps(id, props as Partial<ValueType>);
 
@@ -44,10 +48,12 @@ abstract class Service<
 
 /** @public */
 namespace Service {
-	export class Error extends global.Error {
+	export abstract class Error extends global.Error {
+		abstract statusCode: number;
 	}
 
-	export class ValueNotFoundError extends Error {
+	export abstract class ValueNotFoundError extends Error {
+		statusCode = 404;
 	}
 
 	export abstract class ValueNotUniqueError extends Error {

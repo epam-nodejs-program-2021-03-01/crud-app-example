@@ -38,5 +38,3 @@ Group.init<ImplyTimestamps<Group>>({
 	sequelize: client,
 	tableName: "Groups",
 });
-
-Group.sync();

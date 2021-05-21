@@ -4,7 +4,7 @@
 	},
 	"compilerOptions": {
 		// Output
-		"target": "es2015",
+		"target": "es2017",
 		"module": "commonjs",
 		"outDir": "dist",
 		"inlineSources": true,
@@ -12,10 +12,15 @@
 		"noEmitOnError": true,
 
 		// Development
+		"lib": [
+			"es5",
+		],
 		"checkJs": true,
 		"strict": true,
 		"noUnusedLocals": true,
 		"downlevelIteration": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
