@@ -6,4 +6,5 @@ load({
 	...options,
 	path: resolve(__dirname, ".env.local"),
 	silent: false,
+	errorOnMissing: true,
 });
