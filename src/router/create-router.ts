@@ -7,7 +7,7 @@ type ExpressHttpMethod = Lowercase<HttpMethod> & ({
 })[keyof IRoute];
 
 /** @private */
-type Routes = Record<string, Partial<Record<ExpressHttpMethod, RequestHandler | RequestHandler[]>>>;
+type Routes = Record<string, Partial<Record<ExpressHttpMethod, RequestHandler[]>>>;
 
 /** @private */
 type Entry<Obj extends object> = [ keyof Obj, Obj[keyof Obj] ];
