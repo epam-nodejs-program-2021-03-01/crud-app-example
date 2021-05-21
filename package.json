@@ -27,7 +27,7 @@
     "start": "node --require source-map-support/register --require ./env/remote.js dist/index.js",
     "dev": "nodemon --ext json,ts --require ./env/local.ts src/index.ts",
     "preplay": "touch src/playground.ts",
-    "play": "nodemon --ext json,ts --require ./env/local.ts src/playground.ts"
+    "play": "ts-node --require ./env/local.ts src/playground.ts"
   },
   "devDependencies": {
     "@types/express": "4.17.11",
