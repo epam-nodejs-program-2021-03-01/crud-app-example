@@ -7,7 +7,6 @@ const path = require("path");
 const options = {
 	schema: path.resolve(__dirname, ".env.schema"),
 	defaults: path.resolve(__dirname, ".env.defaults"),
-	errorOnMissing: true,
 };
 
 module.exports = {
