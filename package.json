@@ -24,8 +24,7 @@
     "build": "npm run build:only",
     "postbuild": "del-cli dist/**/*.type.js* dist/**/typings/**/*.js*",
     "lint": "eslint --ext .js,.ts src",
-    "FIXME:": "change ./env/common to ./env/remote",
-    "start": "node --require source-map-support/register --require ./env/common.js dist/index.js",
+    "start": "node --require source-map-support/register --require ./env/remote.js dist/index.js",
     "dev": "nodemon --ext json,ts --require ./env/local.ts src/index.ts",
     "preplay": "touch src/playground.ts",
     "play": "nodemon --ext json,ts --require ./env/local.ts src/playground.ts"
