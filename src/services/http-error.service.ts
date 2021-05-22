@@ -98,20 +98,27 @@ export default class HttpErrorService extends Service {
 	}
 
 	@Logged({ level: "debug", hideArgs: true })
-	logError(error: unknown): void {
-		let message: unknown;
+	protected createLogMessageFromCelebrateError(error: CelebrateError): string {
+		return this.createDetailsFromCelebrateError(error)
+			.filter(({ kind }) => kind === "message")
+			.map(({ description }) => description)
+			.join(", ");
+	}
+
+	@Logged({ level: "debug", hideArgs: true })
+	protected createLogMessage(error: unknown): string | unknown {
+		if (error instanceof Service.Error)
+			return `${error.name} (status ${error.statusCode}): ${error.message}`;
 
 		if (error instanceof CelebrateError)
-			message = this.createDetailsFromCelebrateError(error)
-				.filter(({ kind }) => kind === "message")
-				.map(({ description }) => description)
-				.join(", ");
+			return this.createLogMessageFromCelebrateError(error);
 
-		else if (error instanceof Service.Error)
-			message = `${error.name} (status ${error.statusCode}): ${error.message}`;
+		return error;
+	}
 
-		else
-			message = error;
+	@Logged({ level: "debug", hideArgs: true })
+	logError(error: unknown): void {
+		const message = this.createLogMessage(error);
 
 		logger.error(message);
 	}
