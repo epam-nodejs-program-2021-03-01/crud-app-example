@@ -1,8 +1,7 @@
-import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import type { UserTypeCreation } from "../../db/models/user";
 import type UserService from "../../services/user.service";
-import RequestValidation, { Joi } from "../request-validation";
+import RequestValidation, { Joi, Segments } from "../request-validation";
 import { userAge, userLogin, userPassword } from "./definitions";
 
 /** @private */

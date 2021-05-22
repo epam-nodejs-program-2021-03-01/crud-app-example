@@ -1,8 +1,7 @@
-import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import type { GroupTypeCreation } from "../../db/models/group";
 import type GroupService from "../../services/group.service";
-import RequestValidation, { Joi } from "../request-validation";
+import RequestValidation, { Joi, Segments } from "../request-validation";
 import { groupName, groupPermissions } from "./definitions";
 
 /** @private */

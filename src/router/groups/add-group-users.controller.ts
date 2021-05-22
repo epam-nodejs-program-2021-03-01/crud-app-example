@@ -1,7 +1,6 @@
-import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import type GroupService from "../../services/group.service";
-import RequestValidation, { Joi } from "../request-validation";
+import RequestValidation, { Joi, Segments } from "../request-validation";
 import type WithUserIDs from "./with-user-ids.type";
 import { userIDs } from "./definitions";
 

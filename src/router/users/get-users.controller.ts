@@ -1,7 +1,6 @@
-import { Segments } from "celebrate";
 import type { RequestHandler } from "express";
 import type UserService from "../../services/user.service";
-import RequestValidation, { Joi, definitions } from "../request-validation";
+import RequestValidation, { Joi, Segments, definitions } from "../request-validation";
 
 /** @private */
 interface Deps {
