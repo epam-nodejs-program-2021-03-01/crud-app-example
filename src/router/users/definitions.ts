@@ -13,3 +13,5 @@ export const userPassword = Joi.string()
 export const userAge = Joi.number()
 	.min(4)
 	.max(130);
+
+export const getUsersLimit = definitions.naturalNumber;

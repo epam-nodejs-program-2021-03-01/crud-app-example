@@ -1,6 +1,7 @@
 import type { RequestHandler } from "express";
 import type UserService from "../../services/user.service";
-import RequestValidation, { Joi, Segments, definitions } from "../request-validation";
+import RequestValidation, { Joi, Segments } from "../request-validation";
+import { getUsersLimit, userLoginSubstring } from "./definitions";
 
 /** @private */
 interface Deps {
@@ -14,14 +15,10 @@ interface GetUsersQuery {
 }
 
 /** @private */
-const userLoginSubstring = Joi.string()
-	.max(32);
-
-/** @private */
 const { requestValidator, request } = new RequestValidation<unknown, GetUsersQuery>({
 	[Segments.QUERY]: Joi.object<GetUsersQuery>({
 		"login-substring": userLoginSubstring.allow(""),
-		limit: definitions.naturalNumber.allow(""),
+		limit: getUsersLimit.allow(""),
 	}),
 });
 
