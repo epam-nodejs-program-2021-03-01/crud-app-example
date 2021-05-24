@@ -24,34 +24,42 @@ const STATIC_DESIGNATOR = "+";
 /** @private */
 const NON_STATIC_DESIGNATOR = ".";
 
-// FIXME: very poorly typed
+interface Method<Instance extends object = object> {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(this: Instance, ...args: any[]): any;
+}
+
+interface MethodDecoratorCustom<Instance extends object = object> {
+	(
+		target: Instance | Constructor<Instance>,
+		key: PropertyKey,
+		descriptor: TypedPropertyDescriptor<Method<Instance | Constructor<Instance>>>
+	): void | TypedPropertyDescriptor<Method<Instance | Constructor<Instance>>>;
+}
+
 export default function Logged<Instance extends object>({
 	level = "info",
 	mapArgs,
-}: LoggedParams = {}): MethodDecorator {
+}: LoggedParams = {}): MethodDecoratorCustom<Instance> {
 	return (target, key, descriptor): void => {
 		if (descriptor.value == null)
 			return;
 
-		const context = target as Instance | Constructor<Instance>;
-
 		let logPrefix: string;
 
-		if (context instanceof Function)
-			logPrefix = context.name + STATIC_DESIGNATOR;
+		if (target instanceof Function)
+			logPrefix = target.name + STATIC_DESIGNATOR;
 
 		else
-			logPrefix = context.constructor.name + NON_STATIC_DESIGNATOR;
+			logPrefix = target.constructor.name + NON_STATIC_DESIGNATOR;
 
 		const params = { prefix: `Calling: ${logPrefix}`, mapArgs } as const;
-		const method = descriptor.value as unknown as Function;
-		const logged: Function = function (this: typeof context, ...args) {
+		const method = descriptor.value;
+		const logged: typeof method = function (this: typeof target, ...args) {
 			logger.log(level, stringifyFunctionCall(key, args, params));
 			return method.apply(this, args);
 		};
 
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		descriptor.value = logged;
 	};
 }
