@@ -32,7 +32,7 @@ export interface ErrorResponse {
 type ErrorResponseData = Omit<ErrorResponse, "message">;
 
 export default class HttpErrorService extends Service {
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createDetailsFromCelebrateError(error: CelebrateError): Detail[] {
 		const details: Detail[] = [];
 
@@ -45,7 +45,7 @@ export default class HttpErrorService extends Service {
 		return details;
 	}
 
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createErrorResponseData(error: unknown): ErrorResponseData {
 		if (error instanceof Service.Error)
 			return {
@@ -76,12 +76,12 @@ export default class HttpErrorService extends Service {
 		};
 	}
 
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createErrorMessage(error: unknown, req: Req): string {
 		return `Request "${req.method} ${req.originalUrl}" failed`;
 	}
 
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	createErrorResponse(error: unknown, req: Req): ErrorResponse {
 		const { statusCode, details } = this.createErrorResponseData(error);
 
@@ -97,7 +97,7 @@ export default class HttpErrorService extends Service {
 		};
 	}
 
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createLogMessageFromCelebrateError(error: CelebrateError): string {
 		return this.createDetailsFromCelebrateError(error)
 			.filter(({ kind }) => kind === "message")
@@ -105,7 +105,7 @@ export default class HttpErrorService extends Service {
 			.join(", ");
 	}
 
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createLogMessage(error: unknown): string | unknown {
 		if (error instanceof Service.Error)
 			return `${error.name} (status ${error.statusCode}): ${error.message}`;
@@ -116,7 +116,7 @@ export default class HttpErrorService extends Service {
 		return error;
 	}
 
-	@Logged({ level: "debug", hideArgs: true })
+	@Logged({ level: "debug", mapArgs: "hide" })
 	logError(error: unknown): void {
 		const message = this.createLogMessage(error);
 
