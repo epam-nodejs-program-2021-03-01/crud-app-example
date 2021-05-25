@@ -41,6 +41,11 @@ export default class UserService extends ModelService<User> {
 		return records.map((record) => record.get());
 	}
 
+	@Logged({ level: "debug", mapArgs: "hide" })
+	protected async createRecord(props: UserTypeCreation): Promise<User> {
+		return User.create(props);
+	}
+
 	@Logged()
 	async findRecordByLogin(login: string): Promise<User | null> {
 		return User.findOne({ where: { login, isDeleted: "false" } });
@@ -56,7 +61,7 @@ export default class UserService extends ModelService<User> {
 	@Logged()
 	async create(props: UserTypeCreation): Promise<UserType> {
 		try {
-			const record = await User.create(props);
+			const record = await this.createRecord(props);
 
 			return record.get();
 		} catch (error: unknown) {
