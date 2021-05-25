@@ -6,6 +6,7 @@ import Service from "./abstract.service";
 /** @private */
 interface FindQuery extends Service.FindQuery {
 	filter?: string;
+	filterExact?: boolean;
 }
 
 export default class UserService extends Service<User> {
@@ -25,11 +26,11 @@ export default class UserService extends Service<User> {
 	}
 
 	@Logged()
-	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
+	async find({ filter = "", filterExact = false, limit }: FindQuery = {}): Promise<UserType[]> {
 		const records = await User.findAll({
 			where: {
 				login: {
-					[Op.like]: `%${filter}%`,
+					[Op.like]: filterExact ? filter : `%${filter}%`,
 				},
 				isDeleted: "false",
 			},
@@ -38,6 +39,17 @@ export default class UserService extends Service<User> {
 		});
 
 		return records.map((record) => record.get());
+	}
+
+	@Logged()
+	async findByLogin(login: string): Promise<UserType | null> {
+		const [ user = null ] = await this.find({
+			filter: login,
+			filterExact: true,
+			limit: 1,
+		});
+
+		return user;
 	}
 
 	@Logged()
