@@ -1,14 +1,15 @@
 import { Op, UniqueConstraintError } from "sequelize";
 import User, { UserType, UserTypeCreation } from "../db/models/user";
 import Logged from "../log/logged.decorator";
-import Service from "./abstract.service";
+import ModelService from "./model-abstract.service";
 
 /** @private */
-interface FindQuery extends Service.FindQuery {
+interface FindQuery extends ModelService.FindQuery {
 	filter?: string;
+	filterExact?: boolean;
 }
 
-export default class UserService extends Service<User> {
+export default class UserService extends ModelService<User> {
 	@Logged({ level: "debug" })
 	protected async getRecord(id: string): Promise<User> {
 		const record = await User.findOne({
@@ -25,11 +26,11 @@ export default class UserService extends Service<User> {
 	}
 
 	@Logged()
-	async find({ filter = "", limit }: FindQuery = {}): Promise<UserType[]> {
+	async find({ filter = "", filterExact = false, limit }: FindQuery = {}): Promise<UserType[]> {
 		const records = await User.findAll({
 			where: {
 				login: {
-					[Op.like]: `%${filter}%`,
+					[Op.like]: filterExact ? filter : `%${filter}%`,
 				},
 				isDeleted: "false",
 			},
@@ -38,6 +39,17 @@ export default class UserService extends Service<User> {
 		});
 
 		return records.map((record) => record.get());
+	}
+
+	@Logged()
+	async findByLogin(login: string): Promise<UserType | null> {
+		const [ user = null ] = await this.find({
+			filter: login,
+			filterExact: true,
+			limit: 1,
+		});
+
+		return user;
 	}
 
 	@Logged()
@@ -62,13 +74,13 @@ export default class UserService extends Service<User> {
 	}
 }
 
-export class UserNotFoundError extends Service.ValueNotFoundError {
+export class UserNotFoundError extends ModelService.ValueNotFoundError {
 	constructor(userID: string) {
 		super(`User "${userID}" was not found`);
 	}
 }
 
-export class UserNotUniqueError extends Service.ValueNotUniqueError {
+export class UserNotUniqueError extends ModelService.ValueNotUniqueError {
 	constructor(userLogin: string) {
 		super(`User with login "${userLogin}" already exists`);
 	}

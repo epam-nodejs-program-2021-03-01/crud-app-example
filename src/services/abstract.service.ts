@@ -1,64 +1,41 @@
-import type { Model } from "sequelize";
-import type Entity from "../db/entity.type";
-import Logged from "../log/logged.decorator";
-
-/** @public */
-namespace Service {
-	export interface FindQuery {
-		limit?: number;
-	}
-
-	export type AnyProps<Value> = Partial<Omit<Value, keyof Entity>>;
+/** @private */
+function hasProp<Key extends PropertyKey>(obj: object, key: Key): obj is { [K in Key]: unknown } {
+	return key in obj;
 }
 
 /** @public */
-abstract class Service<
-	M extends Model,
-	ValueType extends ValueTypeCreation = M["_attributes"],
-	ValueTypeCreation extends Record<PropertyKey, unknown> = M["_creationAttributes"],
-> {
-	protected abstract getRecord(id: string): Promise<M>;
-
-	@Logged({ level: "debug" })
-	protected async updateAnyProps(id: string, props: Service.AnyProps<ValueType>): Promise<M> {
-		const record = await this.getRecord(id);
-
-		return record.update(props);
+abstract class Service {
+	protected expectDependency<
+		Name extends string,
+		Dependency extends Service,
+	>(name: Name): asserts this is { [K in Name]: Dependency } {
+		if (hasProp(this, name) && this[name] != null)
+			throw new ServiceDependencyMissingError(name, this);
 	}
-
-	abstract find(query?: Service.FindQuery): Promise<ValueType[]>;
-	abstract create(props: ValueTypeCreation): Promise<ValueType>;
-
-	@Logged()
-	async get(id: string): Promise<ValueType> {
-		const record = await this.getRecord(id);
-
-		return record.get();
-	}
-
-	@Logged()
-	async update(id: string, props: Partial<ValueTypeCreation>): Promise<ValueType> {
-		const record = await this.updateAnyProps(id, props as Partial<ValueType>);
-
-		return record.get();
-	}
-
-	abstract delete(id: string): Promise<ValueType>;
 }
 
 /** @public */
 namespace Service {
+	/**
+	 * The purpose of `Service.Error` class is to distinguish well-defined
+	 * client-facing errors from internal, possibly unexpected errors.
+	 *
+	 * For example, a `UserNotFoundError` is a perfectly valid result of
+	 * `UserService` correctly doing its job, and it is something that clients
+	 * expect to see, – therefore `UserNotFoundError` is a descendant of `Service.Error`;
+	 * whereas, `ServiceDependencyMissingError` is an error that means that a service cannot
+	 * do its job correctly because of a missing dependency, – it is not a client-facing
+	 * error (clients should not see this), – therefore it is not a `Service.Error`.
+	 */
 	export abstract class Error extends global.Error {
 		abstract statusCode: number;
-	}
-
-	export abstract class ValueNotFoundError extends Error {
-		statusCode = 404;
-	}
-
-	export abstract class ValueNotUniqueError extends Error {
-		statusCode = 400;
 	}
 }
 
 export default Service;
+
+export class ServiceDependencyMissingError extends Error {
+	constructor(dependencyName: string, service: Service) {
+		super(`An instance of ${service.constructor.name} is missing a required dependency "${dependencyName}"`);
+	}
+}
