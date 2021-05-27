@@ -1,3 +1,5 @@
+import Logged from "../log/logged.decorator";
+
 /** @private */
 function hasProp<Key extends PropertyKey>(obj: object, key: Key): obj is { [K in Key]: unknown } {
 	return key in obj;
@@ -5,11 +7,12 @@ function hasProp<Key extends PropertyKey>(obj: object, key: Key): obj is { [K in
 
 /** @public */
 abstract class Service {
+	@Logged({ level: "debug" })
 	protected expectDependency<
 		Name extends string,
 		Dependency extends Service,
-	>(name: Name): asserts this is { [K in Name]: Dependency } {
-		if (hasProp(this, name) && this[name] != null)
+	>(name: Name): asserts this is { [N in Name]: Dependency } {
+		if (!hasProp(this, name) || this[name] == null)
 			throw new ServiceDependencyMissingError(name, this);
 	}
 }
