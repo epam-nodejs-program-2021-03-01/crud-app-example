@@ -12,7 +12,7 @@ abstract class Service {
 		Dependency extends Service,
 	>(name: Name): asserts this is { deps: { [N in Name]: Dependency } } {
 		if ((this.deps[name] instanceof Service) === false)
-			throw new ServiceDependencyMissingError(name, this);
+			throw new ServiceDependencyMissingError(this, name);
 	}
 }
 
@@ -37,7 +37,7 @@ namespace Service {
 export default Service;
 
 export class ServiceDependencyMissingError extends Error {
-	constructor(dependencyName: string, service: Service) {
+	constructor(service: Service, dependencyName: string) {
 		super(`An instance of ${service.constructor.name} is missing a required dependency "${dependencyName}"`);
 	}
 }
