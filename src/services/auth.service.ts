@@ -1,12 +1,19 @@
 import ms from "ms";
 import jwt from "jsonwebtoken";
 import Logged from "../log/logged.decorator";
-import type UserService from "./user.service";
+import type { UserType } from "../db/models/user";
 import Service from "./abstract.service";
+
+/** @private */
+namespace Deps {
+	export interface UserService extends Service {
+		findByLogin(login: string): Promise<UserType | null>;
+	}
+}
 
 /** @private Short for "Dependencies" */
 type Deps = {
-	userService?: UserService;
+	userService?: Deps.UserService;
 };
 
 export type Token = string & {
