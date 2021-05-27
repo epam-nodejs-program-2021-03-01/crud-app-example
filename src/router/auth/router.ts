@@ -19,11 +19,9 @@ router.route("/login")
 		login.requestValidator,
 		async (req: typeof login.request, res) => {
 			const auth = req.header("authorization");
-			const issue = await authService.issueToken(auth, {
-				data: req.body,
-			});
+			const tokens = await authService.login(auth, req.body);
 
-			res.json(issue);
+			res.json(tokens);
 		},
 	);
 

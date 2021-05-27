@@ -19,21 +19,53 @@ interface Deps extends Service.Deps {
 /** @private */
 type AuthTokenType = "Bearer" | "Basic";
 
-export type Token = string & {
-	readonly __type__: unique symbol;
+/** @private */
+const jwtTokenLifespans = {
+	access: "30 seconds",
+	// TODO: refresh: "1 week",
+} as const;
+
+/** @private */
+type JwtTokenType = keyof typeof jwtTokenLifespans;
+
+/** @private */
+type TokenNominal<Type extends JwtTokenType> = string & {
+	/** @deprecated This doesn't exist in runtime */
+	readonly __kind__: unique symbol;
+
+	/** @deprecated This doesn't exist in runtime */
+	readonly __type__: Type;
+};
+
+export type AccessToken = TokenNominal<"access">;
+// TODO: export type RefreshToken = TokenNominal<"refresh">;
+
+/** @private */
+type PayloadData<Type extends JwtTokenType> = (Type extends "refresh" ? unknown /* TODO: {
+	userLogin: string;
+	tokenID: string;
+} */ : unknown);
+
+/** @private */
+type Payload<Type extends JwtTokenType = JwtTokenType> = {
+	[key: string]: unknown;
+	tokenType: Type;
+	data?: PayloadData<Type>;
 };
 
 /** @private */
-interface TokenIssue {
-	token: Token;
+interface IssuedToken<Type extends JwtTokenType> {
+	type: Type;
+	value: TokenNominal<Type>;
 	issuedAt: Date;
-	expiresAt?: Date;
+	expiresAt: Date | null;
 }
 
 /** @private */
-interface IssueTokenParams {
-	data?: unknown;
-}
+type IssuedTokens = {
+	accessToken: IssuedToken<"access">;
+	// TODO: refreshToken: IssuedToken<"refresh">;
+};
 
 /** @private */
 const secret = process.env.JWT_TOKEN_SECRET;
@@ -76,56 +108,96 @@ export default class AuthService extends Service {
 
 		if (user == null || password !== user.password)
 			throw new AuthCredentialsInvalidError(login);
+
+		// TODO: return { login, password };
 	}
 
-	@Logged()
-	async issueToken(auth: string | undefined, {
-		data,
-	}: IssueTokenParams = {}): Promise<TokenIssue> {
-		await this.validateCreds(auth);
+	@Logged({ level: "debug" })
+	protected sign<Type extends JwtTokenType>(payload: Payload<Type>, options?: jwt.SignOptions): TokenNominal<Type> {
+		return jwt.sign(payload, secret, options) as TokenNominal<Type>;
+	}
 
-		const now = new Date();
-		const payload = {
+	@Logged({ level: "debug" })
+	protected issueToken<Type extends JwtTokenType>(type: Type, data?: PayloadData<Type>): IssuedToken<Type> {
+		const now = Date.now();
+		const lifespan: string = jwtTokenLifespans[type];
+		const token = this.sign<Type>({
 			data,
-			iat: sec(now.getTime()),
+			tokenType: type,
+			iat: sec(now),
+		}, {
+			expiresIn: lifespan,
+		});
+
+		return {
+			type,
+			value: token,
+			issuedAt: new Date(now),
+			expiresAt: new Date(now + ms(lifespan)),
 		};
-
-		const token = jwt.sign(payload, secret, { expiresIn: "30 seconds" });
-
-		const issue: TokenIssue = {
-			token: token as Token,
-			issuedAt: now,
-		};
-
-		const decoded = jwt.decode(token);
-
-		if (decoded != null && typeof decoded !== "string")
-			if (typeof decoded.exp === "number")
-				issue.expiresAt = new Date(decoded.exp * 1000);
-
-		return issue;
 	}
 
 	@Logged()
-	getToken(auth: string | undefined): Token {
-		const token = this.parseAuthValue("Bearer", auth);
+	async login(auth: string | undefined, data?: unknown): Promise<IssuedTokens> {
+		/* TODO: const { login } = */ await this.validateCreds(auth);
 
-		return token as Token;
+		const accessToken = this.issueToken("access", data);
+		// TODO: const refreshToken = this.issueToken("refresh" /* TODO: { tokenID: refreshTokenID, userLogin: login } */);
+
+		// TODO: in DB, store the fact that a refresh token with this ID is associated with a user with ${login} login
+		// TODO: if the user already have an associated refresh token, remove it prior to that
+
+		return {
+			accessToken,
+			// TODO: refreshToken,
+		};
 	}
 
-	@Logged()
-	getPayload(token: Token): unknown {
+	@Logged({ level: "debug" })
+	protected extractPayload<Type extends JwtTokenType>(type: Type, token: string): Payload<Type> {
 		try {
-			return jwt.verify(token, secret, { clockTolerance: 1 });
+			return jwt.verify(token, secret, { clockTolerance: 1 }) as Payload<Type>;
 		} catch (error: unknown) {
 			if (error instanceof jwt.TokenExpiredError)
-				throw new AuthTokenExpiredError(error.expiredAt);
+				throw new AuthTokenExpiredError(type, error.expiredAt);
 
 			if (error instanceof jwt.JsonWebTokenError)
 				throw new AuthJwtError(error);
 
 			throw error;
 		}
+	}
+
+	@Logged()
+	parseToken<Type extends JwtTokenType>(type: Type, auth: string | undefined): PayloadData<Type> | undefined {
+		const token = this.parseAuthValue("Bearer", auth);
+		const payload = this.extractPayload(type, token);
+
+		if (typeof payload !== "object")
+			throw new AuthTokenPayloadUnknownError(payload, "payload is not of an object type");
+
+		if ("tokenType" in payload === false)
+			throw new AuthTokenPayloadUnknownError(payload, "tokenType property is missing");
+
+		AuthTokenTypeUnexpectedError.throwIfNotEqual(payload.tokenType, type);
+
+		return payload.data;
+	}
+
+	@Logged()
+	async renew(/* TODO: auth: string | undefined */): Promise<void> {
+		/* TODO:
+		const data = this.parseToken("refresh", auth);
+
+		if (typeof data !== "object" || "tokenID" in data === false)
+			throw new AuthTokenPayloadUnknownError({ data }, "tokenID property is missing in payload data of refresh token");
+		*/
+
+		// TODO: check that token payload data object contains userLogin property
+
+		// TODO: in DB, check that user with ${data.userLogin} login has an associated refresh token with ${data.tokenID} ID
+		// TODO: if not, throw a AuthRefreshTokenUnknownError error
+		// TODO: otherwise, issue a new access token
 	}
 }
 
@@ -159,6 +231,31 @@ export class AuthHeaderUnknownTypeError extends Service.Error {
 	}
 }
 
+export class AuthTokenTypeUnexpectedError extends Service.Error {
+	statusCode = 403;
+
+	@Logged({ level: "debug" })
+	static throwIfNotEqual<Type extends JwtTokenType>(type: JwtTokenType, expected: Type): asserts type is Type {
+		if (type !== expected)
+			throw new AuthTokenTypeUnexpectedError(type, expected);
+	}
+
+	constructor(actual: JwtTokenType, expected: JwtTokenType) {
+		super(`Unexpected JWT token type: expected ${expected} token, got ${actual} token`);
+	}
+}
+
+export class AuthTokenPayloadUnknownError extends Service.Error {
+	statusCode = 403;
+
+	constructor(
+		public payload: unknown,
+		public hint: string,
+	) {
+		super("Refusing to verify token with unexpected payload");
+	}
+}
+
 export class AuthTokenExpiredError extends Service.Error {
 	statusCode = 403;
 
@@ -167,8 +264,8 @@ export class AuthTokenExpiredError extends Service.Error {
 		return ms(Date.now() - then.getTime(), { long: true });
 	}
 
-	constructor(expiration: Date) {
-		super(`The supplied token has expired ${AuthTokenExpiredError.calcTimeAgo(expiration)} ago`);
+	constructor(type: JwtTokenType, expiration: Date) {
+		super(`The supplied ${type} token has expired ${AuthTokenExpiredError.calcTimeAgo(expiration)} ago`);
 	}
 }
 
