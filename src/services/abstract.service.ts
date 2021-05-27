@@ -8,7 +8,7 @@ abstract class Service {
 	protected expectDependency<
 		Name extends string,
 		Dependency extends Service,
-	>(name: Name): asserts this is { [K in Name]: Dependency } {
+	>(name: Name): asserts this is { [N in Name]: Dependency } {
 		if (!hasProp(this, name) || this[name] == null)
 			throw new ServiceDependencyMissingError(name, this);
 	}
