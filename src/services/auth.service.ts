@@ -52,12 +52,12 @@ export default class AuthService extends Service {
 	@Logged({ level: "debug" })
 	private validateLifespan(lifespan: string | undefined): asserts lifespan is string {
 		if (!lifespan)
-			throw new AuthInvalidLifespanError(String(lifespan));
+			throw new AuthLifespanInvalidError(String(lifespan));
 
 		const lifespanMsec = ms(lifespan);
 
 		if (typeof lifespanMsec !== "number" || !isFinite(lifespanMsec))
-			throw new AuthInvalidLifespanError(lifespan);
+			throw new AuthLifespanInvalidError(lifespan);
 	}
 
 	@Logged({ level: "debug" })
@@ -173,7 +173,7 @@ export class AuthHeaderUnknownTypeError extends Service.Error {
 	}
 }
 
-export class AuthInvalidLifespanError extends Service.Error {
+export class AuthLifespanInvalidError extends Service.Error {
 	statusCode = 400;
 
 	constructor(lifespan: string) {
