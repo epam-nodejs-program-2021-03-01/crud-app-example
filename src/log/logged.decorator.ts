@@ -8,11 +8,6 @@ declare global {
 }
 
 /** @private */
-interface Constructor<Instance extends object> extends NewableFunction {
-	new (...args: unknown[]): Instance;
-}
-
-/** @private */
 interface LoggedParams {
 	level?: Level;
 	mapArgs?: KnownArgMapperName | ArgMapper;

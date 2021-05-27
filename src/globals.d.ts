@@ -1,6 +1,12 @@
 import type { Level } from "./log/logger";
 
 declare global {
+	interface Constructor<Instance extends object = object> {
+		new (...args: unknown[]): Instance;
+	}
+}
+
+declare global {
 	namespace NodeJS {
 		interface ProcessEnv {
 			readonly NODE_ENV: string;
