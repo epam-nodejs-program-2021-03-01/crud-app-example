@@ -140,7 +140,7 @@ export class AuthCredentialsInvalidError extends Service.Error {
 	statusCode = 401;
 
 	constructor(userLogin: string) {
-		super(`Invalid credentials: either the user "${userLogin}" does not exist, or the password is wrong`);
+		super(`Invalid credentials: the user "${userLogin}" does not exist, or the password is incorrect`);
 	}
 }
 
