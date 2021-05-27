@@ -40,9 +40,6 @@ interface IssueTokenParams {
 const secret = process.env.JWT_TOKEN_SECRET;
 
 /** @private */
-const jwtTokenPattern = /^[\w=-]+\.[\w=-]+(?:\.[\w/.+=-]+)?$/;
-
-/** @private */
 function sec(msec: number): number {
 	return Math.floor(msec / 1000);
 }
@@ -127,9 +124,6 @@ export default class AuthService extends Service {
 	getToken(auth: string | undefined): Token {
 		const token = this.parseAuthValue("Bearer", auth);
 
-		if (!jwtTokenPattern.test(token))
-			throw new AuthHeaderInvalidValueError(token);
-
 		return token as Token;
 	}
 
@@ -176,14 +170,6 @@ export class AuthHeaderUnknownTypeError extends Service.Error {
 
 	constructor(type: string, expected: AuthTokenType = "Bearer") {
 		super(`Invalid type of "Authorization" token: "${type}" (expected "${expected}")`);
-	}
-}
-
-export class AuthHeaderInvalidValueError extends Service.Error {
-	statusCode = 401;
-
-	constructor(token: string) {
-		super(`Invalid "Authorization" header value: "${token}" (expected a JWT token)`);
 	}
 }
 
