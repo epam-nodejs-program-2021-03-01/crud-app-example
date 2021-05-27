@@ -55,7 +55,6 @@ Notice that any push to non-development environment branch automatically trigger
 ### Auth
 
 - `POST /auth/token` – pack the given request body inside a JWT token
-	- `POST /auth/token?lifespan=<"1 day"|"42 sec"|"4h"...>` – pack the given request body inside a JWT token, expire it after the given time interval
 
 ### Users
 

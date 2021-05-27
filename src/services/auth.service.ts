@@ -33,7 +33,6 @@ interface TokenIssue {
 /** @private */
 interface IssueTokenParams {
 	data?: unknown;
-	lifespan?: string;
 }
 
 /** @private */
@@ -45,25 +44,8 @@ function sec(msec: number): number {
 }
 
 export default class AuthService extends Service {
-	static readonly ACCESS_TOKEN_LIFESPAN_MAX = "1 minute";
-	static readonly ACCESS_TOKEN_LIFESPAN_DEFAULT = "30 seconds";
-
 	constructor(deps?: Deps) {
 		super(deps);
-	}
-
-	@Logged({ level: "debug" })
-	private validateLifespan(lifespan: string | undefined): asserts lifespan is string {
-		if (!lifespan)
-			throw new AuthLifespanInvalidError(String(lifespan));
-
-		const lifespanMsec = ms(lifespan);
-
-		if (typeof lifespanMsec !== "number" || !isFinite(lifespanMsec))
-			throw new AuthLifespanInvalidError(lifespan);
-
-		if (lifespanMsec > ms(AuthService.ACCESS_TOKEN_LIFESPAN_MAX))
-			throw new AuthLifespanTooLongError(lifespan);
 	}
 
 	@Logged({ level: "debug" })
@@ -99,11 +81,8 @@ export default class AuthService extends Service {
 	@Logged()
 	async issueToken(auth: string | undefined, {
 		data,
-		lifespan = AuthService.ACCESS_TOKEN_LIFESPAN_DEFAULT,
 	}: IssueTokenParams = {}): Promise<TokenIssue> {
 		await this.validateCreds(auth);
-
-		this.validateLifespan(lifespan);
 
 		const now = new Date();
 		const payload = {
@@ -111,7 +90,8 @@ export default class AuthService extends Service {
 			iat: sec(now.getTime()),
 		};
 
-		const token = jwt.sign(payload, secret, { expiresIn: lifespan });
+		const token = jwt.sign(payload, secret, { expiresIn: "30 seconds" });
+
 		const issue: TokenIssue = {
 			token: token as Token,
 			issuedAt: now,
@@ -176,22 +156,6 @@ export class AuthHeaderUnknownTypeError extends Service.Error {
 
 	constructor(type: string, expected: AuthTokenType = "Bearer") {
 		super(`Invalid type of "Authorization" token: "${type}" (expected "${expected}")`);
-	}
-}
-
-export class AuthLifespanInvalidError extends Service.Error {
-	statusCode = 400;
-
-	constructor(lifespan: string) {
-		super(`Could not parse supplied lifespan pattern: "${lifespan}"`);
-	}
-}
-
-export class AuthLifespanTooLongError extends Service.Error {
-	statusCode = 403;
-
-	constructor(lifespan: string) {
-		super(`Access token lifespan cannot exceed ${AuthService.ACCESS_TOKEN_LIFESPAN_MAX} (attempted lifespan: "${lifespan}")`);
 	}
 }
 

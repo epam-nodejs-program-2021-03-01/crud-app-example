@@ -21,7 +21,6 @@ router.route("/token")
 			const auth = req.header("authorization");
 			const issue = await authService.issueToken(auth, {
 				data: req.body,
-				lifespan: req.query.lifespan,
 			});
 
 			res.json(issue);
