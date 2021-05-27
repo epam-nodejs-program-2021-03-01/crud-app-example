@@ -18,14 +18,8 @@ router.route("/token")
 	.post(
 		issueToken.requestValidator,
 		async (req: typeof issueToken.request, res) => {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const auth = req.header("authorization")!;
-			const credentialsRaw = auth.split(" ")[1];
-			const credentials = Buffer.from(credentialsRaw, "base64").toString("ascii");
-
-			const [ login, password ] = credentials.split(":");
-
-			const issue = await authService.issueToken(login, password, {
+			const auth = req.header("authorization");
+			const issue = await authService.issueToken(auth, {
 				data: req.body,
 				lifespan: req.query.lifespan,
 			});

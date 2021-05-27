@@ -16,6 +16,9 @@ interface Deps extends Service.Deps {
 	userService?: Deps.UserService;
 }
 
+/** @private */
+type AuthTokenType = "Bearer" | "Basic";
+
 export type Token = string & {
 	readonly __type__: unique symbol;
 };
@@ -61,8 +64,28 @@ export default class AuthService extends Service {
 	}
 
 	@Logged({ level: "debug" })
-	protected async validateCredentials(login: string, password: string): Promise<void> {
+	protected parseAuthValue(expectedType: AuthTokenType, auth: string | undefined): string {
+		if (!auth)
+			throw new AuthHeaderMissingError();
+
+		const [ type, value ] = auth.split(" ");
+
+		AuthHeaderUnknownTypeError.throwIfNotEqual(type, expectedType);
+
+		if (!value)
+			throw new AuthHeaderMissingError();
+
+		return value;
+	}
+
+	@Logged({ level: "debug" })
+	protected async validateCreds(auth: string | undefined): Promise<void> {
 		this.using<Deps, "userService">("userService");
+
+		const credsRaw = this.parseAuthValue("Basic", auth);
+		const creds = Buffer.from(credsRaw, "base64").toString("ascii");
+
+		const [ login, password ] = creds.split(":");
 
 		const user = await this.deps.userService.findByLogin(login);
 
@@ -71,11 +94,11 @@ export default class AuthService extends Service {
 	}
 
 	@Logged()
-	async issueToken<Data extends object>(login: string, password: string, {
+	async issueToken<Data extends object>(auth: string | undefined, {
 		data = {},
 		lifespan = "1 day",
 	}: IssueTokenParams<Data> = {}): Promise<TokenIssue> {
-		await this.validateCredentials(login, password);
+		await this.validateCreds(auth);
 
 		this.validateLifespan(lifespan);
 
@@ -86,7 +109,6 @@ export default class AuthService extends Service {
 		};
 
 		const token = jwt.sign(payload, secret, { expiresIn: lifespan });
-
 		const issue: TokenIssue = {
 			token: token as Token,
 			issuedAt: now,
@@ -103,16 +125,7 @@ export default class AuthService extends Service {
 
 	@Logged()
 	getToken(auth: string | undefined): Token {
-		if (!auth)
-			throw new AuthHeaderMissingError();
-
-		const [ type, token ] = auth.split(" ");
-
-		if (type !== "Bearer")
-			throw new AuthHeaderUnknownTypeError(type);
-
-		if (!token)
-			throw new AuthHeaderMissingError();
+		const token = this.parseAuthValue("Bearer", auth);
 
 		if (!jwtTokenPattern.test(token))
 			throw new AuthHeaderInvalidValueError(token);
@@ -155,8 +168,14 @@ export class AuthHeaderMissingError extends Service.Error {
 export class AuthHeaderUnknownTypeError extends Service.Error {
 	statusCode = 401;
 
-	constructor(type: string) {
-		super(`Invalid type of "Authorization" token: "${type}" (expected "Bearer")`);
+	@Logged({ level: "debug" })
+	static throwIfNotEqual<Type extends AuthTokenType>(type: string, expected: Type): asserts type is Type {
+		if (type !== expected)
+			throw new AuthHeaderUnknownTypeError(type, expected);
+	}
+
+	constructor(type: string, expected: AuthTokenType = "Bearer") {
+		super(`Invalid type of "Authorization" token: "${type}" (expected "${expected}")`);
 	}
 }
 
