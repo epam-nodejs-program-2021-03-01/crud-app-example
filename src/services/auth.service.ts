@@ -2,6 +2,7 @@ import type { Request } from "express";
 import ms from "ms";
 import jwt from "jsonwebtoken";
 import Logged from "../log/logged.decorator";
+import type UserService from "./user.service";
 import Service from "./abstract.service";
 
 export type Token = string & {
@@ -33,6 +34,12 @@ function sec(msec: number): number {
 }
 
 export default class AuthService extends Service {
+	constructor (
+		protected userService: UserService | null = null,
+	) {
+		super();
+	}
+
 	@Logged({ level: "debug" })
 	private validateLifespan(lifespan: string | undefined): asserts lifespan is string {
 		if (!lifespan)
@@ -45,10 +52,22 @@ export default class AuthService extends Service {
 	}
 
 	@Logged()
-	issueToken<Data extends object>({
+	protected async validateCredentials(login: string, password: string): Promise<void> {
+		this.expectDependency<"userService", UserService>("userService");
+
+		const user = await this.userService.findByLogin(login);
+
+		if (user == null || password !== user.password)
+			throw new AuthCredentialsInvalidError(login);
+	}
+
+	@Logged()
+	async issueToken<Data extends object>(login: string, password: string, {
 		data = {},
 		lifespan = "1 day",
-	}: IssueTokenParams<Data> = {}): TokenIssue {
+	}: IssueTokenParams<Data> = {}): Promise<TokenIssue> {
+		await this.validateCredentials(login, password);
+
 		this.validateLifespan(lifespan);
 
 		const now = new Date();
@@ -107,6 +126,14 @@ export default class AuthService extends Service {
 
 			throw error;
 		}
+	}
+}
+
+export class AuthCredentialsInvalidError extends Service.Error {
+	statusCode = 401;
+
+	constructor(userLogin: string) {
+		super(`Invalid credentials: either the user "${userLogin}" does not exist, or the password is wrong`);
 	}
 }
 
