@@ -1,16 +1,48 @@
 import Logged from "../log/logged.decorator";
 
 /** @public */
+namespace Service {
+	// short for "dependencies"
+	export type Deps = Partial<Record<string, Service>>;
+}
+
+/** @public */
 abstract class Service {
 	constructor(
-		protected deps: Record<string, Service> = Object.create(null),
+		protected deps: Service.Deps = Object.create(null),
 	) {}
 
+	/**
+	 * @example
+	 * class ServiceOne extends Service {
+	 * 	doSomething() {}
+	 * }
+	 * 
+	 * type ServiceTwoDeps = {
+	 * 	first?: ServiceOne;
+	 * };
+	 * 
+	 * class ServiceTwo extends Service {
+	 * 	constructor(deps?: ServiceTwoDeps) {
+	 * 		super(deps);
+	 * 	}
+	 * 
+	 * 	doSomethingUsingServiceOne() {
+	 * 		this.using<ServiceTwoDeps, "first">("first");
+	 * 
+	 * 		// the object this.deps.first is how properly typed
+	 * 		// and it is guaranteed to exist in runtime
+	 * 		this.deps.first.doSomething();
+	 * 	}
+	 * }
+	 */
 	@Logged({ level: "debug" })
-	protected expectDependency<
-		Name extends string,
-		Dependency extends Service,
-	>(name: Name): asserts this is { deps: { [N in Name]: Dependency } } {
+	protected using<
+		Deps extends Service.Deps,
+		Name extends string & keyof Deps,
+	>(
+		name: Name,
+	): asserts this is { deps: { [N in Name]: NonNullable<Deps[Name]> } } {
 		if ((this.deps[name] instanceof Service) === false)
 			throw new ServiceDependencyMissingError(this, name);
 	}

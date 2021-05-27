@@ -11,10 +11,10 @@ namespace Deps {
 	}
 }
 
-/** @private Short for "Dependencies" */
-type Deps = {
+/** @private */
+interface Deps extends Service.Deps {
 	userService?: Deps.UserService;
-};
+}
 
 export type Token = string & {
 	readonly __type__: unique symbol;
@@ -62,7 +62,7 @@ export default class AuthService extends Service {
 
 	@Logged({ level: "debug" })
 	protected async validateCredentials(login: string, password: string): Promise<void> {
-		this.expectDependency<"userService", Deps.UserService>("userService");
+		this.using<Deps, "userService">("userService");
 
 		const user = await this.deps.userService.findByLogin(login);
 
