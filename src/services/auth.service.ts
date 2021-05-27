@@ -45,6 +45,9 @@ function sec(msec: number): number {
 }
 
 export default class AuthService extends Service {
+	static readonly ACCESS_TOKEN_LIFESPAN_MAX = "1 minute";
+	static readonly ACCESS_TOKEN_LIFESPAN_DEFAULT = "30 seconds";
+
 	constructor(deps?: Deps) {
 		super(deps);
 	}
@@ -58,6 +61,9 @@ export default class AuthService extends Service {
 
 		if (typeof lifespanMsec !== "number" || !isFinite(lifespanMsec))
 			throw new AuthLifespanInvalidError(lifespan);
+
+		if (lifespanMsec > ms(AuthService.ACCESS_TOKEN_LIFESPAN_MAX))
+			throw new AuthLifespanTooLongError(lifespan);
 	}
 
 	@Logged({ level: "debug" })
@@ -93,7 +99,7 @@ export default class AuthService extends Service {
 	@Logged()
 	async issueToken(auth: string | undefined, {
 		data,
-		lifespan = "1 day",
+		lifespan = AuthService.ACCESS_TOKEN_LIFESPAN_DEFAULT,
 	}: IssueTokenParams = {}): Promise<TokenIssue> {
 		await this.validateCreds(auth);
 
@@ -178,6 +184,14 @@ export class AuthLifespanInvalidError extends Service.Error {
 
 	constructor(lifespan: string) {
 		super(`Could not parse supplied lifespan pattern: "${lifespan}"`);
+	}
+}
+
+export class AuthLifespanTooLongError extends Service.Error {
+	statusCode = 403;
+
+	constructor(lifespan: string) {
+		super(`Access token lifespan cannot exceed ${AuthService.ACCESS_TOKEN_LIFESPAN_MAX} (attempted lifespan: "${lifespan}")`);
 	}
 }
 
