@@ -50,7 +50,7 @@ export default class AuthService extends Service {
 			throw new AuthInvalidLifespanError(lifespan);
 	}
 
-	@Logged()
+	@Logged({ level: "debug" })
 	protected async validateCredentials(login: string, password: string): Promise<void> {
 		this.expectDependency<"userService", UserService>("userService");
 
