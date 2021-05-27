@@ -4,6 +4,11 @@ import Logged from "../log/logged.decorator";
 import type UserService from "./user.service";
 import Service from "./abstract.service";
 
+/** @private Short for "Dependencies" */
+type Deps = {
+	userService?: UserService;
+};
+
 export type Token = string & {
 	readonly __type__: unique symbol;
 };
@@ -33,10 +38,8 @@ function sec(msec: number): number {
 }
 
 export default class AuthService extends Service {
-	constructor (
-		protected userService: UserService | null = null,
-	) {
-		super();
+	constructor(deps?: Deps) {
+		super(deps);
 	}
 
 	@Logged({ level: "debug" })
@@ -52,9 +55,9 @@ export default class AuthService extends Service {
 
 	@Logged({ level: "debug" })
 	protected async validateCredentials(login: string, password: string): Promise<void> {
-		this.expectDependency<"userService", UserService>("userService");
+		this.expectDependency<"userService", Deps.UserService>("userService");
 
-		const user = await this.userService.findByLogin(login);
+		const user = await this.deps.userService.findByLogin(login);
 
 		if (user == null || password !== user.password)
 			throw new AuthCredentialsInvalidError(login);

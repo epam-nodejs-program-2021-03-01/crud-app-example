@@ -11,7 +11,7 @@ const router = Router();
 const userService = new UserService();
 
 /** @private */
-const authService = new AuthService(userService);
+const authService = new AuthService({ userService });
 
 router.route("/token")
 	.all(allowMethods("POST"))
