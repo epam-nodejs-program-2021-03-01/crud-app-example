@@ -1,4 +1,3 @@
-import type { Request } from "express";
 import ms from "ms";
 import jwt from "jsonwebtoken";
 import Logged from "../log/logged.decorator";
@@ -93,9 +92,7 @@ export default class AuthService extends Service {
 	}
 
 	@Logged()
-	getToken(req: Request): Token {
-		const auth = req.header("Authorization");
-
+	getToken(auth: string | undefined): Token {
 		if (!auth)
 			throw new AuthHeaderMissingError();
 

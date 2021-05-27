@@ -35,7 +35,8 @@ export default function auth({ skipRequests = [] }: AuthParams = {}): RequestHan
 
 	return (req, res, next): void => {
 		if (!skipped.has(describe(req))) {
-			const token = authService.getToken(req);
+			const auth = req.header("Authorization");
+			const token = authService.getToken(auth);
 
 			req.token = token;
 			req.tokenPayload = authService.getPayload(token);
