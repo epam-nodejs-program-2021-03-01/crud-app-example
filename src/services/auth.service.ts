@@ -31,8 +31,8 @@ interface TokenIssue {
 }
 
 /** @private */
-interface IssueTokenParams<Data extends object> {
-	data?: Data | {};
+interface IssueTokenParams {
+	data?: unknown;
 	lifespan?: string;
 }
 
@@ -94,17 +94,17 @@ export default class AuthService extends Service {
 	}
 
 	@Logged()
-	async issueToken<Data extends object>(auth: string | undefined, {
-		data = {},
+	async issueToken(auth: string | undefined, {
+		data,
 		lifespan = "1 day",
-	}: IssueTokenParams<Data> = {}): Promise<TokenIssue> {
+	}: IssueTokenParams = {}): Promise<TokenIssue> {
 		await this.validateCreds(auth);
 
 		this.validateLifespan(lifespan);
 
 		const now = new Date();
 		const payload = {
-			...data,
+			data,
 			iat: sec(now.getTime()),
 		};
 
