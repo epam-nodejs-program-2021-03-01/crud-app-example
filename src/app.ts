@@ -29,7 +29,7 @@ app.use(cors({
 app.use(auth({
 	skipRequests: [
 		"GET /",
-		"POST /auth/token",
+		"POST /auth/login",
 	],
 }));
 

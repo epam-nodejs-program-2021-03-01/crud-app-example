@@ -54,7 +54,7 @@ Notice that any push to non-development environment branch automatically trigger
 
 ### Auth
 
-- `POST /auth/token` – pack the given request body inside a JWT token
+- `POST /auth/login` – get an access token (with request body packed as its payload) and a refresh token
 
 ### Users
 

@@ -2,7 +2,7 @@ import { Router } from "express";
 import allowMethods from "express-allow-methods";
 import AuthService from "../../services/auth.service";
 import UserService from "../../services/user.service";
-import { issueToken } from "./validation";
+import { login } from "./validation";
 
 /** @public */
 const router = Router();
@@ -13,11 +13,11 @@ const userService = new UserService();
 /** @private */
 const authService = new AuthService({ userService });
 
-router.route("/token")
+router.route("/login")
 	.all(allowMethods("POST"))
 	.post(
-		issueToken.requestValidator,
-		async (req: typeof issueToken.request, res) => {
+		login.requestValidator,
+		async (req: typeof login.request, res) => {
 			const auth = req.header("authorization");
 			const issue = await authService.issueToken(auth, {
 				data: req.body,
