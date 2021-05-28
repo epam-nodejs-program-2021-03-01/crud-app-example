@@ -17,7 +17,7 @@ interface Deps extends Service.Deps {
 }
 
 /** @private */
-type AuthTokenType = "Bearer" | "Basic";
+type AuthType = "Bearer" | "Basic";
 
 /** @private */
 const jwtTokenLifespans = {
@@ -81,13 +81,13 @@ export default class AuthService extends Service {
 	}
 
 	@Logged({ level: "debug" })
-	protected parseAuthValue(expectedType: AuthTokenType, auth: string | undefined): string {
+	protected parseAuthValue(expectedType: AuthType, auth: string | undefined): string {
 		if (!auth)
 			throw new AuthHeaderMissingError();
 
 		const [ type, value ] = auth.split(" ");
 
-		AuthHeaderUnknownTypeError.throwIfNotEqual(type, expectedType);
+		AuthTypeUnexpectedError.throwIfNotEqual(type, expectedType);
 
 		if (!value)
 			throw new AuthHeaderMissingError();
@@ -217,17 +217,17 @@ export class AuthHeaderMissingError extends Service.Error {
 	}
 }
 
-export class AuthHeaderUnknownTypeError extends Service.Error {
+export class AuthTypeUnexpectedError extends Service.Error {
 	statusCode = 401;
 
 	@Logged({ level: "debug" })
-	static throwIfNotEqual<Type extends AuthTokenType>(type: string, expected: Type): asserts type is Type {
+	static throwIfNotEqual<Type extends AuthType>(type: string, expected: Type): asserts type is Type {
 		if (type !== expected)
-			throw new AuthHeaderUnknownTypeError(type, expected);
+			throw new AuthTypeUnexpectedError(type, expected);
 	}
 
-	constructor(type: string, expected: AuthTokenType = "Bearer") {
-		super(`Invalid type of "Authorization" token: "${type}" (expected "${expected}")`);
+	constructor(actual: string, expected: AuthType) {
+		super(`Unexpected type of authorization: expected "${expected}", got "${actual}" instead`);
 	}
 }
 
@@ -241,7 +241,7 @@ export class AuthTokenTypeUnexpectedError extends Service.Error {
 	}
 
 	constructor(actual: JwtTokenType, expected: JwtTokenType) {
-		super(`Unexpected JWT token type: expected ${expected} token, got ${actual} token`);
+		super(`Unexpected JWT token type: expected ${expected} token, got ${actual} token instead`);
 	}
 }
 
