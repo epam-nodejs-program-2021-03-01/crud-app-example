@@ -1,6 +1,7 @@
 import Group from "./models/group";
 import User from "./models/user";
 import UserGroup from "./models/user-group";
+import client from "./client";
 
 export default async function synchronizeModels(): Promise<void> {
 	User.belongsToMany(Group, {
@@ -15,9 +16,5 @@ export default async function synchronizeModels(): Promise<void> {
 		foreignKey: "groupID",
 	});
 
-	await Promise.all([
-		UserGroup.sync(),
-		User.sync(),
-		Group.sync(),
-	]);
+	await client.sync();
 }
