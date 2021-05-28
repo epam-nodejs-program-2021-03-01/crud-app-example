@@ -1,10 +1,10 @@
 import ms from "ms";
 import jwt from "jsonwebtoken";
+import logger from "../log/logger";
 import Logged from "../log/logged.decorator";
 import type { UserType } from "../db/models/user";
+import RefreshTokenDB from "../db/models/refresh-token";
 import Service from "./abstract.service";
-import { RefreshToken as RefreshTokenDB } from "../db/models/refresh-token";
-import logger from "../log/logger";
 
 /** @private */
 namespace Deps {
@@ -73,11 +73,6 @@ interface IssuedTokens extends WithAccessToken {
 /** @private */
 const secret = process.env.JWT_TOKEN_SECRET;
 
-/** @private */
-function sec(msec: number): number {
-	return Math.floor(msec / 1000);
-}
-
 export default class AuthService extends Service {
 	constructor(deps?: Deps) {
 		super(deps);
@@ -90,7 +85,8 @@ export default class AuthService extends Service {
 
 		const [ type, value ] = auth.split(" ");
 
-		AuthTypeUnexpectedError.throwIfNotEqual(type, expectedType);
+		if (type !== expectedType)
+			throw new AuthTypeUnexpectedError(type, expectedType);
 
 		if (!value)
 			throw new AuthHeaderMissingError();
@@ -127,7 +123,7 @@ export default class AuthService extends Service {
 		const token = this.sign<Type>({
 			data,
 			tokenType: type,
-			iat: sec(now),
+			iat: Math.floor(now / 1000),
 		}, {
 			expiresIn: lifespan,
 		});
@@ -181,9 +177,9 @@ export default class AuthService extends Service {
 	}
 
 	@Logged()
-	parseToken<Type extends JwtTokenType>(type: Type, auth: string | undefined): PayloadData<Type> | undefined {
+	parseToken<Type extends JwtTokenType>(expectedType: Type, auth: string | undefined): PayloadData<Type> | undefined {
 		const token = this.parseAuthValue("Bearer", auth);
-		const payload = this.extractPayload(type, token);
+		const payload = this.extractPayload(expectedType, token);
 
 		if (typeof payload !== "object")
 			throw new AuthTokenPayloadUnknownError(payload, "payload is not of an object type");
@@ -191,7 +187,8 @@ export default class AuthService extends Service {
 		if ("tokenType" in payload === false)
 			throw new AuthTokenPayloadUnknownError(payload, "tokenType property is missing");
 
-		AuthTokenTypeUnexpectedError.throwIfNotEqual(payload.tokenType, type);
+		if (payload.tokenType !== expectedType)
+			throw new AuthTokenTypeUnexpectedError(payload.tokenType, expectedType);
 
 		return payload.data;
 	}
@@ -252,12 +249,6 @@ export class AuthHeaderMissingError extends Service.Error {
 export class AuthTypeUnexpectedError extends Service.Error {
 	statusCode = 401;
 
-	@Logged({ level: "debug" })
-	static throwIfNotEqual<Type extends AuthType>(type: string, expected: Type): asserts type is Type {
-		if (type !== expected)
-			throw new AuthTypeUnexpectedError(type, expected);
-	}
-
 	constructor(actual: string, expected: AuthType) {
 		super(`Unexpected type of authorization: expected "${expected}", got "${actual}" instead`);
 	}
@@ -265,12 +256,6 @@ export class AuthTypeUnexpectedError extends Service.Error {
 
 export class AuthTokenTypeUnexpectedError extends Service.Error {
 	statusCode = 403;
-
-	@Logged({ level: "debug" })
-	static throwIfNotEqual<Type extends JwtTokenType>(type: JwtTokenType, expected: Type): asserts type is Type {
-		if (type !== expected)
-			throw new AuthTokenTypeUnexpectedError(type, expected);
-	}
 
 	constructor(actual: JwtTokenType, expected: JwtTokenType) {
 		super(`Unexpected JWT token type: expected ${expected} token, got ${actual} token instead`);
