@@ -3,7 +3,6 @@ import requestID from "express-request-id";
 import cors from "cors";
 import httpLogger from "./middlewares/http-logger";
 import errorHandler from "./middlewares/error-handler";
-import auth from "./middlewares/auth";
 import router from "./router";
 
 declare global {
@@ -24,13 +23,6 @@ app.use(httpLogger());
 
 app.use(cors({
 	origin: "*",
-}));
-
-app.use(auth({
-	skipRequests: [
-		"GET /",
-		"POST /auth/login",
-	],
 }));
 
 app.use("/", router);

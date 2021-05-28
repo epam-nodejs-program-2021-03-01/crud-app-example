@@ -1,4 +1,5 @@
 import { Router } from "express";
+import auth from "./auth.middleware";
 import authRouter from "./auth/router";
 import groupsRouter from "./groups/router";
 import usersRouter from "./users/router";
@@ -16,7 +17,7 @@ router.route("/")
 	});
 
 router.use("/auth", authRouter);
-router.use("/groups", groupsRouter);
-router.use("/users", usersRouter);
+router.use("/groups", auth(), groupsRouter);
+router.use("/users", auth(), usersRouter);
 
 export default router;
