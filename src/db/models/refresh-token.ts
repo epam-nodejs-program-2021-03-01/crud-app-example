@@ -31,4 +31,5 @@ RefreshToken.init<ImplyTimestamps<RefreshToken>>({
 	},
 }, {
 	sequelize: client,
+	tableName: "refresh_token",
 });
