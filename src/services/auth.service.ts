@@ -4,18 +4,12 @@ import logger from "../log/logger";
 import Logged from "../log/logged.decorator";
 import type { UserType } from "../db/models/user";
 import RefreshTokenDB from "../db/models/refresh-token";
+import type UserService from "./user.service";
 import Service from "./abstract.service";
 
 /** @private */
-namespace Deps {
-	export interface UserService extends Service {
-		findByLogin(login: string): Promise<UserType | null>;
-	}
-}
-
-/** @private */
 interface Deps extends Service.Deps {
-	userService?: Deps.UserService;
+	userService?: UserService;
 }
 
 /** @private */
