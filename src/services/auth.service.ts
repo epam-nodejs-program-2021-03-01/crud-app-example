@@ -40,11 +40,11 @@ type PayloadData<Type extends JwtTokenType> = (Type extends "refresh" ? {
 } : unknown);
 
 /** @private */
-type Payload<Type extends JwtTokenType = JwtTokenType> = {
+interface Payload<Type extends JwtTokenType = JwtTokenType> {
 	[key: string]: unknown;
 	tokenType: Type;
 	data?: PayloadData<Type>;
-};
+}
 
 /** @private */
 interface IssuedToken<Type extends JwtTokenType> {
