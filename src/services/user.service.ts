@@ -42,14 +42,15 @@ export default class UserService extends ModelService<User> {
 	}
 
 	@Logged()
-	async findByLogin(login: string): Promise<UserType | null> {
-		const [ user = null ] = await this.find({
-			filter: login,
-			filterExact: true,
-			limit: 1,
-		});
+	async findRecordByLogin(login: string): Promise<User | null> {
+		return User.findOne({ where: { login, isDeleted: "false" } });
+	}
 
-		return user;
+	@Logged()
+	async findByLogin(login: string): Promise<UserType | null> {
+		const user = await this.findRecordByLogin(login);
+
+		return user?.get() ?? null;
 	}
 
 	@Logged()
