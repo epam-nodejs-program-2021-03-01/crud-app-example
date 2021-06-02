@@ -26,7 +26,7 @@ Group.init<ImplyTimestamps<Group>>({
 		autoIncrement: true,
 	},
 	name: {
-		type: DataTypes.STRING,
+		type: DataTypes.STRING(255),
 		allowNull: false,
 	},
 	permissions: {
@@ -36,5 +36,5 @@ Group.init<ImplyTimestamps<Group>>({
 	},
 }, {
 	sequelize: client,
-	tableName: "Groups",
+	tableName: "group",
 });

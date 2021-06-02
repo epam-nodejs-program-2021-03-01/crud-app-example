@@ -41,5 +41,5 @@ UserGroup.init<ImplyTimestamps<UserGroup>>({
 	},
 }, {
 	sequelize: client,
-	tableName: "UserGroup",
+	tableName: "user_group",
 });

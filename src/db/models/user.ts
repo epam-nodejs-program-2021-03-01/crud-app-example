@@ -24,12 +24,12 @@ User.init<ImplyTimestamps<User>>({
 		autoIncrement: true,
 	},
 	login: {
-		type: DataTypes.STRING,
+		type: DataTypes.STRING(255),
 		unique: "user_login",
 		allowNull: false,
 	},
 	password: {
-		type: DataTypes.STRING,
+		type: DataTypes.STRING(255),
 		allowNull: false,
 	},
 	age: {
@@ -42,7 +42,7 @@ User.init<ImplyTimestamps<User>>({
 	},
 }, {
 	sequelize: client,
-	tableName: "Users",
+	tableName: "user",
 	indexes: [
 		{
 			name: "user_login",
