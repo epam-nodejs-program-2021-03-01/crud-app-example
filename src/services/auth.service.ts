@@ -205,6 +205,20 @@ export default class AuthService extends Service {
 	}
 
 	@Logged({ level: "debug" })
+	protected assertRefreshTokenPayloadDataKnown(data: unknown): asserts data is PayloadData<"refresh"> {
+		const payload = { data } as const;
+
+		if (typeof data !== "object" || data == null)
+			throw new AuthTokenPayloadUnknownError(payload, "refresh token payload data is not an object");
+
+		if ("tokenID" in data === false)
+			throw new AuthTokenPayloadUnknownError(payload, "tokenID property is missing in refresh token payload data object");
+
+		if ("userID" in data === false)
+			throw new AuthTokenPayloadUnknownError(payload, "userID property is missing in refresh token payload data object");
+	}
+
+	@Logged({ level: "debug" })
 	protected async assertRefreshTokenKnown(userID: string, tokenID: string): Promise<void> {
 		const tokenDB = await RefreshTokenDB.findOne({ where: { userID } });
 
@@ -220,16 +234,8 @@ export default class AuthService extends Service {
 	@Logged()
 	async renew(auth: string | undefined, data?: unknown): Promise<WithAccessToken> {
 		const tokenData = this.parseToken("refresh", auth);
-		const payload = { data: tokenData } as const;
 
-		if (typeof tokenData !== "object")
-			throw new AuthTokenPayloadUnknownError(payload, "refresh token payload data is not an object");
-
-		if ("tokenID" in tokenData === false)
-			throw new AuthTokenPayloadUnknownError(payload, "tokenID property is missing in refresh token payload data object");
-
-		if ("userID" in tokenData === false)
-			throw new AuthTokenPayloadUnknownError(payload, "userID property is missing in refresh token payload data object");
+		this.assertRefreshTokenPayloadDataKnown(tokenData);
 
 		const { userID, tokenID } = tokenData;
 
