@@ -50,11 +50,19 @@ Notice that any push to non-development environment branch automatically trigger
 
 ## Endpoints
 
+> Note: 🔐 means that this endpoint requires an access token to be provided in `Authorization` header.
+
 - `GET /` – health-check
 
 ### Auth
 
 - `POST /auth/login` – get an access token (with request body packed as its payload) and a refresh token
+
+	_Requires Basic Authorization header with user login and password_
+
+- `POST /auth/renew` – get a new access token
+
+	_Requires Bearer Authorization header with refresh token_
 
 ### Users
 
