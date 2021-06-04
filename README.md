@@ -64,6 +64,10 @@ Notice that any push to non-development environment branch automatically trigger
 
 	_Requires Bearer Authorization header with refresh token_
 
+- `POST /auth/logout` - invalidate all issued refresh tokens
+
+	_Requires Basic Authorization header with user login and password_
+
 ### Users
 
 - `GET /users` 🔐 – get list of all users

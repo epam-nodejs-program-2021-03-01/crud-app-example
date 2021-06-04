@@ -136,11 +136,16 @@ export default class AuthService extends Service {
 	}
 
 	@Logged({ level: "debug" })
-	protected async issueRefreshToken(userID: string): Promise<IssuedToken<"refresh">> {
-		const destroyedCount = await RefreshTokenDB.destroy({ where: { userID } });
+	protected async invalidateUserRefreshTokens(userID: string): Promise<number> {
+		return RefreshTokenDB.destroy({ where: { userID } });
+	}
 
-		if (destroyedCount > 0)
-			logger.info(`Existing refresh token for user "${userID}" was invalidated`);
+	@Logged({ level: "debug" })
+	protected async issueRefreshToken(userID: string): Promise<IssuedToken<"refresh">> {
+		const invalidatedCount = await this.invalidateUserRefreshTokens(userID);
+
+		if (invalidatedCount > 0)
+			logger.info(`All existing refresh tokens for user "${userID}" were invalidated`);
 
 		const tokenDB = await RefreshTokenDB.create({ userID });
 		const tokenID = tokenDB.getDataValue("id");
@@ -158,6 +163,13 @@ export default class AuthService extends Service {
 			accessToken,
 			refreshToken,
 		};
+	}
+
+	@Logged()
+	async logout(auth: string | undefined): Promise<void> {
+		const user = await this.validateCreds(auth);
+
+		await this.invalidateUserRefreshTokens(user.id);
 	}
 
 	@Logged({ level: "debug" })

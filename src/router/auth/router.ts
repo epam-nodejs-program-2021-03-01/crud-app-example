@@ -37,4 +37,14 @@ router.route("/renew")
 		},
 	);
 
+router.route("/logout")
+	.all(allowMethods("POST"))
+	.post(async (req, res) => {
+		const auth = req.header("authorization");
+
+		await authService.logout(auth);
+
+		res.sendStatus(204);
+	});
+
 export default router;
