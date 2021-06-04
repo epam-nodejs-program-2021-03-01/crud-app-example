@@ -97,12 +97,17 @@ export default class AuthService extends Service {
 
 		const [ login, password ] = creds.split(":");
 
-		const user = await this.deps.userService.findByLogin(login);
+		const user = await this.deps.userService.findRecordByLogin(login);
 
-		if (user == null || password !== user.password)
+		if (user == null)
 			throw new AuthCredentialsInvalidError(login);
 
-		return user;
+		const passwordsMatch = await user.isPasswordCorrect(password);
+
+		if (!passwordsMatch)
+			throw new AuthCredentialsInvalidError(login);
+
+		return user.get();
 	}
 
 	@Logged({ level: "debug" })
