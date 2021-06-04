@@ -100,12 +100,12 @@ export default class AuthService extends Service {
 		const user = await this.deps.userService.findRecordByLogin(login);
 
 		if (user == null)
-			throw new AuthCredentialsInvalidError(login);
+			throw new AuthCredsInvalidError(login);
 
 		const passwordsMatch = await user.isPasswordCorrect(password);
 
 		if (!passwordsMatch)
-			throw new AuthCredentialsInvalidError(login);
+			throw new AuthCredsInvalidError(login);
 
 		return user.get();
 	}
@@ -229,7 +229,7 @@ export default class AuthService extends Service {
 	}
 }
 
-export class AuthCredentialsInvalidError extends Service.Error {
+export class AuthCredsInvalidError extends Service.Error {
 	statusCode = 401;
 
 	constructor(userLogin: string) {
