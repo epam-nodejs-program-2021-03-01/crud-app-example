@@ -241,6 +241,10 @@ export default class AuthService extends Service {
 	}
 }
 
+export abstract class AuthHintedError extends Service.Error {
+	public abstract hint: string;
+}
+
 export class AuthCredsInvalidError extends Service.Error {
 	statusCode = 401;
 
@@ -273,7 +277,7 @@ export class AuthTokenTypeUnexpectedError extends Service.Error {
 	}
 }
 
-export class AuthTokenPayloadUnknownError extends Service.Error {
+export class AuthTokenPayloadUnknownError extends AuthHintedError {
 	statusCode = 403;
 
 	constructor(
@@ -297,7 +301,7 @@ export class AuthTokenExpiredError extends Service.Error {
 	}
 }
 
-export class AuthRefreshTokenUnknownError extends Service.Error {
+export class AuthRefreshTokenUnknownError extends AuthHintedError {
 	statusCode = 403;
 
 	constructor(

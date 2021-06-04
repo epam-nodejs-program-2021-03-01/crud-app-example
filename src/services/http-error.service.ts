@@ -3,6 +3,7 @@ import type { RequestHandler } from "express";
 import Logged from "../log/logged.decorator";
 import logger from "../log/logger";
 import Service from "./abstract.service";
+import { AuthHintedError } from "./auth.service";
 
 /** @private */
 // This type does not require all of the properties of Request
@@ -46,16 +47,29 @@ export default class HttpErrorService extends Service {
 	}
 
 	@Logged({ level: "debug", mapArgs: "hide" })
+	protected createDetailsFromServiceError(error: Service.Error): Detail[] {
+		const details: Detail[] = [
+			{
+				kind: "message",
+				description: error.message,
+			},
+		];
+
+		if (error instanceof AuthHintedError)
+			details.push({
+				kind: "message",
+				description: error.hint,
+			});
+
+		return details;
+	}
+
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createErrorResponseData(error: unknown): ErrorResponseData {
 		if (error instanceof Service.Error)
 			return {
 				statusCode: error.statusCode,
-				details: [
-					{
-						kind: "message",
-						description: error.message,
-					},
-				],
+				details: this.createDetailsFromServiceError(error),
 			};
 
 		if (error instanceof CelebrateError) {
@@ -106,9 +120,22 @@ export default class HttpErrorService extends Service {
 	}
 
 	@Logged({ level: "debug", mapArgs: "hide" })
+	protected createLogMessageServiceError(error: Service.Error): string {
+		const chunks: string[] = [
+			`${error.name} (status ${error.statusCode})`,
+			error.message,
+		];
+
+		if (error instanceof AuthHintedError)
+			chunks.push(error.hint);
+
+		return chunks.join(": ");
+	}
+
+	@Logged({ level: "debug", mapArgs: "hide" })
 	protected createLogMessage(error: unknown): string | unknown {
 		if (error instanceof Service.Error)
-			return `${error.name} (status ${error.statusCode}): ${error.message}`;
+			return this.createLogMessageServiceError(error);
 
 		if (error instanceof CelebrateError)
 			return this.createLogMessageFromCelebrateError(error);
