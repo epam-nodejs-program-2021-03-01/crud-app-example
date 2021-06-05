@@ -2,19 +2,21 @@ import type { ClientConfig } from "pg";
 import { timeout, TimeoutError } from "promise-timeout";
 import client from "./client";
 
-export type ConnectionParameters = Pick<ClientConfig, "user" | "database" | "host" | "port">;
-
-/** @private */
-interface Connection {
-	connectionParameters: ConnectionParameters;
-}
-
 /** @private */
 interface ConnectParams {
 	timeout?: number | string;
 }
 
-export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<ConnectionParameters> {
+/** @private */
+interface ConnectionRaw {
+	connectionParameters: ClientConfig;
+}
+
+export type Connection = Pick<ClientConfig, "user" | "database" | "host" | "port">;
+
+export let connection: Connection | null = null;
+
+export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<Connection> {
 	const timeoutDuration = Number(duration) || null;
 
 	if (timeoutDuration == null)
@@ -33,7 +35,10 @@ export default async function connect({ timeout: duration }: ConnectParams = {})
 			throw error;
 		}
 
-	const { connectionParameters } = await client.connectionManager.getConnection({ type: "read" }) as Connection;
+	const { connectionParameters: info } = await client.connectionManager.getConnection({ type: "read" }) as ConnectionRaw;
+	const { host, port, database, user } = info;
 
-	return connectionParameters;
+	connection = { host, port, database, user };
+
+	return connection;
 }

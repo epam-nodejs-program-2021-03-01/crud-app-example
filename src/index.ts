@@ -5,12 +5,12 @@ import logger from "./log/logger";
 
 const { PORT, DATABASE_CONNECT_TIMEOUT } = process.env;
 
+app.listen(PORT, () => {
+	logger.info(`Server is listening on port ${PORT}`);
+});
+
 connect({ timeout: DATABASE_CONNECT_TIMEOUT }).then(({ user, database, host, port }) => {
 	logger.info(`Connected to database '${database}' at address '${host}:${port}' as user '${user}'`);
-
-	app.listen(PORT, () => {
-		logger.info(`Server is listening on port ${PORT}`);
-	});
 
 	synchronizeModels();
 });
