@@ -16,6 +16,8 @@ declare global {
 /** @public */
 const app = express();
 
+app.set("json replacer", (key: PropertyKey, value: unknown) => value ?? null);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(requestID());
