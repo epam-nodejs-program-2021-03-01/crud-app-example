@@ -84,30 +84,12 @@ describe("POST /users", () => {
 
 		// FIXME: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617#issuecomment-497760008
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		test.each<any>(
-			Object.keys(bodyValid)
-		)('should require "%s" property in request body', (
-			key: keyof UserTypeCreation,
-			done: jest.DoneCallback,
-		) => {
-			delete body[key];
-
-			const [ req, res, next ] = generateRequestHandlerArgs(body);
-
-			next.mockImplementation(() => {
-				const error = expectToBeCalledOnceWithCelebrateError(next);
-
-				expectCelebrateErrorWithDetail(error, Segments.BODY, `"${key}" is required`);
-
-				done();
-			});
-
-			validator(req, res, next);
-		});
-
-		// FIXME: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34617#issuecomment-497760008
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		test.each<any>([
+			[
+				"\"login\" to be present",
+				() => delete body.login,
+				"\"login\" is required",
+			],
 			[
 				"\"login\" to have at least one character",
 				() => body.login = "",
@@ -129,6 +111,11 @@ describe("POST /users", () => {
 				'"login" with value "hello-world-@" fails to match the alpha-numeric characters pattern',
 			],
 			[
+				"\"password\" to be present",
+				() => delete body.password,
+				"\"password\" is required",
+			],
+			[
 				"\"password\" to have at least one character",
 				() => body.password = "",
 				"\"password\" is not allowed to be empty",
@@ -147,6 +134,11 @@ describe("POST /users", () => {
 				"\"password\" to have digits",
 				() => body.password = "HELLO-world-one",
 				"\"password\" with value \"HELLO-world-one\" fails to match the digits pattern",
+			],
+			[
+				"\"age\" to be present",
+				() => delete body.age,
+				"\"age\" is required",
 			],
 			[
 				"\"age\" to be at least 4",
