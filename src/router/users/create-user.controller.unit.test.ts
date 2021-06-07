@@ -9,10 +9,8 @@ class UserServiceMock extends UserService {
 		const date = "2021-06-07T19:28:29.517Z";
 
 		return {
+			...props,
 			id: "42",
-			login: props.login,
-			password: props.password,
-			age: props.age,
 			createdAt: date,
 			updatedAt: date,
 		};
