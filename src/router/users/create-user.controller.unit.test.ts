@@ -23,11 +23,7 @@ function generateRequestHandlerArgs<
 	Body extends Partial<UserTypeCreation>,
 >(
 	body: Body,
-): [
-	Request<{}, {}, Body>,
-	Response,
-	jest.Mock,
-] {
+): Parameters<RequestHandler<{}, {}, Body>> & { 2: jest.Mock } {
 	const req = {
 		method: "POST",
 		body,
