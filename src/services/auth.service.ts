@@ -136,16 +136,21 @@ export default class AuthService extends Service {
 	}
 
 	@Logged({ level: "debug" })
-	protected async invalidateUserRefreshTokens(userID: string): Promise<number> {
-		return RefreshTokenDB.destroy({ where: { userID } });
+	protected async invalidateRefreshToken(userID: string): Promise<void> {
+		const tokens = await RefreshTokenDB.findAll({ where: { userID } });
+
+		if (tokens.length > 1)
+			logger.warn(`User "${userID}" unexpectedly has ${tokens.length} refresh tokens:`, tokens.map((token) => token.getDataValue("id")));
+
+		await Promise.all(tokens.map((token) => token.destroy()));
+
+		if (tokens.length > 0)
+			logger.info(`Invalidated refresh token for user "${userID}"`);
 	}
 
 	@Logged({ level: "debug" })
 	protected async issueRefreshToken(userID: string): Promise<IssuedToken<"refresh">> {
-		const invalidatedCount = await this.invalidateUserRefreshTokens(userID);
-
-		if (invalidatedCount > 0)
-			logger.info(`All existing refresh tokens for user "${userID}" were invalidated`);
+		await this.invalidateRefreshToken(userID);
 
 		const tokenDB = await RefreshTokenDB.create({ userID });
 		const tokenID = tokenDB.getDataValue("id");
@@ -169,7 +174,7 @@ export default class AuthService extends Service {
 	async logout(auth: string | undefined): Promise<void> {
 		const user = await this.validateCreds(auth);
 
-		await this.invalidateUserRefreshTokens(user.id);
+		await this.invalidateRefreshToken(user.id);
 	}
 
 	@Logged({ level: "debug" })
