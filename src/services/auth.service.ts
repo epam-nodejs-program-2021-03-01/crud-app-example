@@ -190,7 +190,7 @@ export default class AuthService extends Service {
 		}
 	}
 
-	@Logged()
+	@Logged({ level: "debug" })
 	parseToken<Type extends JwtTokenType>(expectedType: Type, auth: string | undefined): PayloadData<Type> | undefined {
 		const token = this.parseAuthValue("Bearer", auth);
 		const payload = this.extractPayload(expectedType, token);
