@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import logger from "../log/logger";
 import Logged from "../log/logged.decorator";
 import type { UserType } from "../db/models/user";
-import RefreshTokenDB from "../db/models/refresh-token";
+import RefreshToken from "../db/models/refresh-token";
 import type UserService from "./user.service";
 import Service from "./abstract.service";
 
@@ -137,7 +137,7 @@ export default class AuthService extends Service {
 
 	@Logged({ level: "debug" })
 	protected async invalidateRefreshToken(userID: string): Promise<void> {
-		const tokens = await RefreshTokenDB.findAll({ where: { userID } });
+		const tokens = await RefreshToken.findAll({ where: { userID } });
 
 		if (tokens.length > 1)
 			logger.warn(`User "${userID}" unexpectedly has ${tokens.length} refresh tokens:`, tokens.map((token) => token.getDataValue("id")));
@@ -152,7 +152,7 @@ export default class AuthService extends Service {
 	protected async issueRefreshToken(userID: string): Promise<IssuedToken<"refresh">> {
 		await this.invalidateRefreshToken(userID);
 
-		const tokenDB = await RefreshTokenDB.create({ userID });
+		const tokenDB = await RefreshToken.create({ userID });
 		const tokenID = tokenDB.getDataValue("id");
 
 		return this.issueToken("refresh", { tokenID, userID });
@@ -225,7 +225,7 @@ export default class AuthService extends Service {
 
 	@Logged({ level: "debug" })
 	protected async assertRefreshTokenKnown(userID: string, tokenID: string): Promise<void> {
-		const tokenDB = await RefreshTokenDB.findOne({ where: { userID } });
+		const tokenDB = await RefreshToken.findOne({ where: { userID } });
 
 		if (tokenDB == null)
 			throw new AuthRefreshTokenUnknownError(`user "${userID}" does not have associated refresh tokens`);
