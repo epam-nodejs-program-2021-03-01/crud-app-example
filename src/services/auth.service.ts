@@ -137,15 +137,13 @@ export default class AuthService extends Service {
 
 	@Logged({ level: "debug" })
 	protected async invalidateRefreshToken(userID: string): Promise<void> {
-		const tokens = await RefreshToken.findAll({ where: { userID } });
+		const destroyedCount = await RefreshToken.destroy({ where: { userID } });
 
-		if (tokens.length > 1)
-			logger.warn(`User "${userID}" unexpectedly has ${tokens.length} refresh tokens:`, tokens.map((token) => token.getDataValue("id")));
-
-		await Promise.all(tokens.map((token) => token.destroy()));
-
-		if (tokens.length > 0)
+		if (destroyedCount > 0)
 			logger.info(`Invalidated refresh token for user "${userID}"`);
+
+		if (destroyedCount > 1)
+			logger.warn(`User "${userID}" unexpectedly has ${destroyedCount} refresh tokens`);
 	}
 
 	@Logged({ level: "debug" })
