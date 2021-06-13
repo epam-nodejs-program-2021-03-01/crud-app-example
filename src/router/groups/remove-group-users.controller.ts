@@ -28,7 +28,7 @@ export default function removeGroupUsers({ groupService }: Deps): RequestHandler
 
 			await groupService.removeUsersFromGroup(groupID, userIDs);
 
-			res.redirect(303, `/groups/${groupID}/users`);
+			res.redirect(303, `/groups/${groupID}?users`);
 		},
 	];
 }

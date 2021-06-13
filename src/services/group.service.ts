@@ -83,6 +83,13 @@ export default class GroupService extends ModelService<Group> {
 	}
 
 	@Logged()
+	async getGroupUsers(id: string): Promise<UserType[]> {
+		const { users } = await this.get(id, { includeUsers: true }) as GroupWithUsersType;
+
+		return users;
+	}
+
+	@Logged()
 	async addUsersToGroup(groupID: string, userIDs: string[]): Promise<void> {
 		// TODO: prevent adding deleted users to groups
 

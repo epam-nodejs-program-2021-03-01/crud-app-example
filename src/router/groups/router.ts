@@ -23,7 +23,7 @@ export default createRouter({
 		delete: deleteGroup({ groupService }),
 	},
 	"/:id/users": {
-		get: getGroupUsers(),
+		get: getGroupUsers({ groupService }),
 		put: addGroupUsers({ groupService }),
 		delete: removeGroupUsers({ groupService }),
 	},

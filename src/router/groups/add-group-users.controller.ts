@@ -28,7 +28,7 @@ export default function addGroupUsers({ groupService }: Deps): RequestHandler[] 
 
 			await groupService.addUsersToGroup(groupID, userIDs);
 
-			res.redirect(303, `/groups/${groupID}/users`);
+			res.redirect(303, `/groups/${groupID}?users`);
 		},
 	];
 }
