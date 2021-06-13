@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import type { UserTypeCreation } from "../../db/models/user";
 import type UserService from "../../services/user.service";
 import RequestValidation, { Joi, Segments } from "../request-validation";
-import { userLogin, userPassword, userAge } from "./definitions";
+import { userLogin, userPassword, userAge, userID } from "./definitions";
 
 /** @private */
 interface Deps {
@@ -15,6 +15,9 @@ const { requestValidator, request } = new RequestValidation<Partial<UserTypeCrea
 		login: userLogin,
 		password: userPassword,
 		age: userAge,
+	}),
+	[Segments.PARAMS]: Joi.object({
+		id: userID,
 	}),
 });
 
