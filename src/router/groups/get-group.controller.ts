@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import type GroupService from "../../services/group.service";
 import queryHasFlag from "../query-has-flag";
 import RequestValidation, { Joi, Segments } from "../request-validation";
-import { includeUsersFlag } from "./definitions";
+import { groupID, includeUsersFlag } from "./definitions";
 
 /** @private */
 interface Deps {
@@ -18,6 +18,9 @@ interface GetGroupQuery {
 const { requestValidator, request } = new RequestValidation<unknown, GetGroupQuery>({
 	[Segments.QUERY]: Joi.object<GetGroupQuery>({
 		users: includeUsersFlag,
+	}),
+	[Segments.PARAMS]: Joi.object({
+		id: groupID,
 	}),
 });
 

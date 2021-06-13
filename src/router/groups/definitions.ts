@@ -1,6 +1,8 @@
 import { permissions } from "../../db/models/group";
 import { Joi, definitions } from "../request-validation";
 
+export const groupID = definitions.naturalNumber;
+
 export const groupName = definitions.name;
 
 export const groupPermissionItem = Joi.string()

@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import type GroupService from "../../services/group.service";
 import RequestValidation, { Joi, Segments } from "../request-validation";
 import type WithUserIDs from "./with-user-ids.type";
-import { userIDs } from "./definitions";
+import { groupID, userIDs } from "./definitions";
 
 /** @private */
 interface Deps {
@@ -13,6 +13,9 @@ interface Deps {
 const { requestValidator, request } = new RequestValidation<WithUserIDs>({
 	[Segments.BODY]: Joi.object<WithUserIDs>({
 		userIDs: userIDs.required(),
+	}),
+	[Segments.PARAMS]: Joi.object({
+		id: groupID,
 	}),
 });
 

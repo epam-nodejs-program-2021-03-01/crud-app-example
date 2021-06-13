@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import type { GroupTypeCreation } from "../../db/models/group";
 import type GroupService from "../../services/group.service";
 import RequestValidation, { Joi, Segments } from "../request-validation";
-import { groupName, groupPermissions } from "./definitions";
+import { groupID, groupName, groupPermissions } from "./definitions";
 
 /** @private */
 interface Deps {
@@ -14,6 +14,9 @@ const { requestValidator, request } = new RequestValidation<Partial<GroupTypeCre
 	[Segments.BODY]: Joi.object<GroupTypeCreation>({
 		name: groupName,
 		permissions: groupPermissions,
+	}),
+	[Segments.PARAMS]: Joi.object({
+		id: groupID,
 	}),
 });
 
