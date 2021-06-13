@@ -1,10 +1,6 @@
-import { IRoute, RequestHandler, Router } from "express";
-import allowMethods, { HttpMethod } from "express-allow-methods";
-
-/** @private Only those methods from `require("http").METHODS` that are supported by Express */
-type ExpressHttpMethod = Lowercase<HttpMethod> & ({
-	[Key in keyof IRoute]: IRoute[Key] extends { (): void; } ? Key : never;
-})[keyof IRoute];
+import { RequestHandler, Router } from "express";
+import allowMethods from "express-allow-methods";
+import type ExpressHttpMethod from "./express-http-method.type";
 
 /** @private */
 type Routes = Record<string, Partial<Record<ExpressHttpMethod, RequestHandler[]>>>;
