@@ -1,4 +1,4 @@
-import { connection } from "../db/connect";
+import { getConnection } from "../db/connect";
 import Service from "./abstract.service";
 
 /** @private */
@@ -33,7 +33,7 @@ export default class HealthService extends Service {
 		() => true,
 
 		// DB is connected
-		() => connection != null,
+		() => getConnection() != null,
 	];
 
 	getStatus(): Status {

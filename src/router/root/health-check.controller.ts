@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { connection } from "../../db/connect";
+import { getConnection } from "../../db/connect";
 import type HealthService from "../../services/health.service";
 
 /** @private */
@@ -22,7 +22,9 @@ export default function healthCheck({ healthService }: Deps): RequestHandler[] {
 					ratio: status.healthFactor,
 				},
 				version: process.env.HEROKU_SLUG_COMMIT,
-				db: { connection },
+				db: {
+					connection: getConnection(),
+				},
 			});
 		},
 	];

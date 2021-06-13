@@ -14,14 +14,12 @@ interface ConnectionRaw {
 
 export type Connection = Pick<ClientConfig, "user" | "database" | "host" | "port">;
 
-/** @public(get) */
-let _connection: Connection | null = null;
+/** @private */
+let connection: Connection | null = null;
 
-export declare const connection: Connection | null;
-
-Object.defineProperty(module.exports, "connection", {
-	get: () => _connection,
-});
+export function getConnection(): Connection | null {
+	return connection;
+}
 
 export default async function connect({ timeout: duration }: ConnectParams = {}): Promise<Connection> {
 	const timeoutDuration = Number(duration) || null;
@@ -45,7 +43,7 @@ export default async function connect({ timeout: duration }: ConnectParams = {})
 	const { connectionParameters: info } = await client.connectionManager.getConnection({ type: "read" }) as ConnectionRaw;
 	const { host, port, database, user } = info;
 
-	_connection = { host, port, database, user };
+	connection = { host, port, database, user };
 
-	return _connection;
+	return connection;
 }
