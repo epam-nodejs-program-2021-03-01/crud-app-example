@@ -1,6 +1,5 @@
 import { RequestHandler, Router } from "express";
-import allowMethods from "express-allow-methods";
-import type ExpressHttpMethod from "./express-http-method.type";
+import allowMethods, { ExpressHttpMethod } from "express-allow-methods";
 
 /** @private */
 type Routes = Record<string, Partial<Record<ExpressHttpMethod, RequestHandler[]>>>;
