@@ -1,4 +1,5 @@
 import { getConnection } from "../db/connect";
+import Logged from "../log/logged.decorator";
 import Service from "./abstract.service";
 
 /** @private */
@@ -36,6 +37,7 @@ export default class HealthService extends Service {
 		() => getConnection() != null,
 	];
 
+	@Logged()
 	getStatus(): Status {
 		const results = this.checks.map((check) => check());
 
