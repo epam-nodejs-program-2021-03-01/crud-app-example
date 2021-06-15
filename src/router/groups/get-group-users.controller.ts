@@ -21,7 +21,7 @@ export default function getGroupUsers({ groupService }: Deps): RequestHandler[] 
 		async (req: typeof request, res) => {
 			const groupID = req.params.id;
 			const users = await groupService.getGroupUsers(groupID);
-	
+
 			res.json(users);
 		},
 	];

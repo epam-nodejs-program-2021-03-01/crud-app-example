@@ -21,7 +21,7 @@ export default function deleteUser({ userService }: Deps): RequestHandler[] {
 		async (req: typeof request, res) => {
 			const userID = req.params.id;
 			const user = await userService.delete(userID);
-	
+
 			res.status(202).json(user);
 		},
 	];

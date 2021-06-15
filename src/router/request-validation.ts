@@ -28,7 +28,7 @@ export namespace definitions {
 		.pattern(/^[a-zA-Z][-a-zA-Z0-9]*$/, { name: "alpha-numeric characters" })
 		.min(1)
 		.max(32);
-	
+
 	export const naturalNumber = Joi.number()
 		.positive()
 		.integer();

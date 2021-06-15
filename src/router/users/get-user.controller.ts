@@ -21,7 +21,7 @@ export default function getUser({ userService }: Deps): RequestHandler[] {
 		async (req: typeof request, res) => {
 			const userID = req.params.id;
 			const user = await userService.get(userID);
-		
+
 			res.json(user);
 		},
 	];

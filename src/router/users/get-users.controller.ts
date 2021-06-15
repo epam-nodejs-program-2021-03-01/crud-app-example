@@ -30,7 +30,7 @@ export default function getUsers({ userService }: Deps): RequestHandler[] {
 				filter: req.query["login-substring"],
 				limit: req.query.limit,
 			});
-	
+
 			res.json(users);
 		},
 	];

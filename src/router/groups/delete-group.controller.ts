@@ -21,7 +21,7 @@ export default function deleteGroup({ groupService }: Deps): RequestHandler[] {
 		async (req: typeof request, res) => {
 			const groupID = req.params.id;
 			const group = await groupService.delete(groupID);
-	
+
 			res.json(group);
 		},
 	];

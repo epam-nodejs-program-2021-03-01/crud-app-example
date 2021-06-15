@@ -23,7 +23,7 @@ export default function createUser({ userService }: Deps): RequestHandler[] {
 		requestValidator,
 		async (req: typeof request, res) => {
 			const { id: userID, createdAt } = await userService.create(req.body);
-	
+
 			res.status(201).json({
 				userID,
 				createdAt,

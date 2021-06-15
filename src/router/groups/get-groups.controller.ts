@@ -10,7 +10,7 @@ export default function getGroups({ groupService }: Deps): RequestHandler[] {
 	return [
 		async (req, res) => {
 			const groups = await groupService.find();
-	
+
 			res.json(groups);
 		},
 	];

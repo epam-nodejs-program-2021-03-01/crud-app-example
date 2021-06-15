@@ -17,19 +17,19 @@ abstract class Service {
 	 * class ServiceOne extends Service {
 	 * 	doSomething() {}
 	 * }
-	 * 
+	 *
 	 * type ServiceTwoDeps = {
 	 * 	first?: ServiceOne;
 	 * };
-	 * 
+	 *
 	 * class ServiceTwo extends Service {
 	 * 	constructor(deps?: ServiceTwoDeps) {
 	 * 		super(deps);
 	 * 	}
-	 * 
+	 *
 	 * 	doSomethingUsingServiceOne() {
 	 * 		this.using<ServiceTwoDeps, "first">("first");
-	 * 
+	 *
 	 * 		// the object this.deps.first is how properly typed
 	 * 		// and it is guaranteed to exist in runtime
 	 * 		this.deps.first.doSomething();
