@@ -20,7 +20,7 @@ type DetailKind =
 /** @private */
 interface Detail {
 	kind: DetailKind;
-	description: string;
+	value: string;
 }
 
 export interface ErrorResponse {
@@ -40,7 +40,7 @@ export default class HttpErrorService extends Service {
 		for (const [ scope, joiError ] of error.details)
 			details.push({
 				kind: "message",
-				description: `(in ${scope}) ${joiError.message}`,
+				value: `(in ${scope}) ${joiError.message}`,
 			});
 
 		return details;
@@ -51,14 +51,14 @@ export default class HttpErrorService extends Service {
 		const details: Detail[] = [
 			{
 				kind: "message",
-				description: error.message,
+				value: error.message,
 			},
 		];
 
 		if (error instanceof AuthHintedError)
 			details.push({
 				kind: "message",
-				description: error.hint,
+				value: error.hint,
 			});
 
 		return details;
@@ -84,7 +84,7 @@ export default class HttpErrorService extends Service {
 			details: [
 				{
 					kind: "message",
-					description: "Unknown error occurred",
+					value: "Unknown error occurred",
 				},
 			],
 		};
@@ -101,7 +101,7 @@ export default class HttpErrorService extends Service {
 
 		details.push({
 			kind: "request_id",
-			description: `Request ID: ${req.id}`,
+			value: req.id,
 		});
 
 		return {
@@ -115,7 +115,7 @@ export default class HttpErrorService extends Service {
 	protected createLogMessageFromCelebrateError(error: CelebrateError): string {
 		return this.createDetailsFromCelebrateError(error)
 			.filter(({ kind }) => kind === "message")
-			.map(({ description }) => description)
+			.map(({ value }) => value)
 			.join(", ");
 	}
 
