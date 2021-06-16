@@ -14,20 +14,3 @@ connect({ timeout: DATABASE_CONNECT_TIMEOUT }).then(({ user, database, host, por
 
 	synchronizeModels();
 });
-
-process.on("unhandledRejection", (reason) => {
-	if (reason instanceof Error)
-		throw reason;
-
-	if (typeof reason === "string")
-		throw new Error(reason);
-
-	throw new Error(JSON.stringify(reason));
-});
-
-process.on("uncaughtException", (error) => {
-	logger.error("Uncaught exception encountered:");
-	logger.error(error);
-	logger.error("Exiting the process with code '1'");
-	process.exit(1);
-});
