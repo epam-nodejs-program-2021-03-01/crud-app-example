@@ -37,26 +37,6 @@ function generateRequestHandlerArgs<
 	return [ req, res, next ];
 }
 
-function expectToBeCalledOnceWithCelebrateError(next: jest.Mock): CelebrateError {
-	expect(next).toHaveBeenCalledTimes(1);
-	expect(next).toHaveBeenLastCalledWith(expect.any(CelebrateError));
-
-	return next.mock.calls[0][0];
-}
-
-function expectCelebrateErrorWithDetail(error: CelebrateError, where: Segments, what: string): void {
-	expect(error).toBeInstanceOf(CelebrateError);
-
-	const validationError = error.details.get(where);
-
-	expect(validationError).toBeInstanceOf(Joi.ValidationError);
-	expect(validationError).toHaveProperty("details", expect.arrayContaining([
-		expect.objectContaining({
-			message: what,
-		}),
-	]));
-}
-
 describe("POST /users", () => {
 	let validator: RequestHandler;
 	let controller: (...args: Parameters<RequestHandler>) => void | Promise<void>;
@@ -148,20 +128,28 @@ describe("POST /users", () => {
 				() => body.age = 131,
 				"\"age\" must be less than or equal to 130",
 			],
-		])('should validate %s', (_name, prepare: Function, message: string, done: jest.DoneCallback) => {
+		])('should validate %s', (name, prepare: Function, message: string, done: jest.DoneCallback) => {
 			prepare();
 
 			const [ req, res, next ] = generateRequestHandlerArgs(body);
 
-			next.mockImplementation(() => {
-				const error = expectToBeCalledOnceWithCelebrateError(next);
+			validator(req, res, next.mockImplementation(() => {
+				expect(next).toHaveBeenCalledTimes(1);
+				expect(next).toHaveBeenLastCalledWith(expect.anything());
 
-				expectCelebrateErrorWithDetail(error, Segments.BODY, message);
+				const error: CelebrateError = next.mock.calls[0][0];
+
+				expect(error).toBeInstanceOf(CelebrateError);
+
+				const bodyError = error.details.get(Segments.BODY);
+
+				expect(bodyError).toBeInstanceOf(Joi.ValidationError);
+				expect(bodyError).toHaveProperty("details", expect.arrayContaining([
+					expect.objectContaining({ message }),
+				]));
 
 				done();
-			});
-
-			validator(req, res, next);
+			}));
 		});
 	});
 
