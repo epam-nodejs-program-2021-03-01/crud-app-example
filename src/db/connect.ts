@@ -1,5 +1,6 @@
 import type { ClientConfig } from "pg";
 import { timeout, TimeoutError } from "promise-timeout";
+import ms from "ms";
 import client from "./client";
 
 /** @private */
@@ -35,7 +36,7 @@ export default async function connect({ timeout: duration }: ConnectParams = {})
 			await timeout(client.authenticate(), timeoutDuration);
 		} catch (error) {
 			if (error instanceof TimeoutError)
-				throw new Error(`Could not connect to DB in ${timeoutDuration} milliseconds`);
+				throw new Error(`Could not connect to DB in ${ms(timeoutDuration, { long: true })}`);
 
 			throw error;
 		}
