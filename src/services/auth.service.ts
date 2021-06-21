@@ -90,6 +90,7 @@ export default class AuthService extends Service {
 
 	@Logged({ level: "debug" })
 	protected async validateCreds(auth: string | undefined): Promise<UserType> {
+		// TODO: rewrite as decorator (#34)
 		this.using<Deps, "userService">("userService");
 
 		const credsRaw = this.parseAuthValue("Basic", auth);

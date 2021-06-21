@@ -20,6 +20,7 @@ const { requestValidator, request } = new RequestValidation<GroupTypeCreation>({
 export default function createGroup({ groupService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
+		// TODO: make DB a loose dependency (#35)
 		async (req: typeof request, res) => {
 			const { id: groupID, createdAt } = await groupService.create(req.body);
 

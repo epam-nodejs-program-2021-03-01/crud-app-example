@@ -24,6 +24,7 @@ const { requestValidator, request } = new RequestValidation<Partial<UserTypeCrea
 export default function updateUser({ userService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
+		// TODO: make DB a loose dependency (#35)
 		async (req: typeof request, res) => {
 			const userID = req.params.id;
 			const user = await userService.update(userID, req.body);

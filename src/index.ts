@@ -9,6 +9,7 @@ app.listen(PORT, () => {
 	logger.info(`Server is listening on port ${PORT}`);
 });
 
+// TODO: make DB a loose dependency (#35)
 connect({ timeout: DATABASE_CONNECT_TIMEOUT }).then(({ user, database, host, port }) => {
 	logger.info(`Connected to database '${database}' at address '${host}:${port}' as user '${user}'`);
 

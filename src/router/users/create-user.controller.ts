@@ -21,6 +21,7 @@ const { requestValidator, request } = new RequestValidation<UserTypeCreation>({
 export default function createUser({ userService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
+		// TODO: make DB a loose dependency (#35)
 		async (req: typeof request, res) => {
 			const { id: userID, createdAt } = await userService.create(req.body);
 

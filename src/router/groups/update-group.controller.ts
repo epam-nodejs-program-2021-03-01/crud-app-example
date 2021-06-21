@@ -23,6 +23,7 @@ const { requestValidator, request } = new RequestValidation<Partial<GroupTypeCre
 export default function updateGroup({ groupService }: Deps): RequestHandler[] {
 	return [
 		requestValidator,
+		// TODO: make DB a loose dependency (#35)
 		async (req: typeof request, res) => {
 			const groupID = req.params.id;
 			const group = await groupService.update(groupID, req.body);
