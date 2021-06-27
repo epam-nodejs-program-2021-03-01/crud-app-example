@@ -32,4 +32,6 @@ export namespace definitions {
 	export const naturalNumber = Joi.number()
 		.positive()
 		.integer();
+
+	export const entityID = naturalNumber.allow(0);
 }

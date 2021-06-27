@@ -1,7 +1,7 @@
 import { permissions } from "../../db/models/group";
 import { Joi, definitions } from "../request-validation";
 
-export const groupID = definitions.naturalNumber;
+export const groupID = definitions.entityID;
 
 export const groupName = definitions.name;
 
@@ -14,4 +14,4 @@ export const groupPermissions = Joi.array()
 export const includeUsersFlag = Joi.any();
 
 export const userIDs = Joi.array()
-	.items(definitions.naturalNumber);
+	.items(definitions.entityID);

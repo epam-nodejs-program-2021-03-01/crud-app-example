@@ -1,6 +1,6 @@
 import { Joi, definitions } from "../request-validation";
 
-export const userID = definitions.naturalNumber;
+export const userID = definitions.entityID;
 
 export const userLogin = definitions.name;
 
