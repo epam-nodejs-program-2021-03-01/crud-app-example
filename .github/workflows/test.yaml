@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  test_u:
+    name: Unit
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: npm ci
+      - run: npm run test:u
+
+  test_i:
+    name: Integration
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: npm ci
+      - run: npm run test:i
