@@ -24,8 +24,7 @@ const jwtTokenLifespans = {
 /** @private */
 type JwtTokenType = keyof typeof jwtTokenLifespans;
 
-/** @private */
-type Token<Type extends JwtTokenType> = string & {
+export type Token<Type extends JwtTokenType> = string & {
 	/** @deprecated This doesn't exist in runtime */
 	readonly __kind__: unique symbol;
 
@@ -46,8 +45,7 @@ interface Payload<Type extends JwtTokenType = JwtTokenType> {
 	data?: PayloadData<Type>;
 }
 
-/** @private */
-interface IssuedToken<Type extends JwtTokenType> {
+export interface IssuedToken<Type extends JwtTokenType> {
 	type: Type;
 	value: Token<Type>;
 	issuedAt: Date;
@@ -112,7 +110,7 @@ export default class AuthService extends Service {
 	}
 
 	@Logged({ level: "debug" })
-	protected sign<Type extends JwtTokenType>(payload: Payload<Type>, options?: jwt.SignOptions): Token<Type> {
+	sign<Type extends JwtTokenType>(payload: Payload<Type>, options?: jwt.SignOptions): Token<Type> {
 		return jwt.sign(payload, secret, options) as Token<Type>;
 	}
 

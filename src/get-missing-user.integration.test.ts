@@ -2,7 +2,7 @@ import supertest from "supertest";
 import app from "./app";
 import client from "./db/client";
 import type { ErrorResponse } from "./services/http-error.service";
-import AuthService, { Token } from "./services/auth.service";
+import AuthService from "./services/auth.service";
 import UserService from "./services/user.service";
 
 const request = supertest(app);
@@ -10,8 +10,8 @@ const request = supertest(app);
 const authService = new AuthService();
 const userService = new UserService();
 
-function getToken(lifespan = "1min"): `Bearer ${Token}` {
-	const { token } = authService.issueToken({ lifespan });
+function getToken(): string {
+	const token = authService.sign({ tokenType: "access" });
 
 	return `Bearer ${token}`;
 }
@@ -34,7 +34,7 @@ function getUserMissingResponse(userID: string): ErrorResponse {
 		details: expect.arrayContaining([
 			{
 				kind: "message",
-				description: `User "${userID}" was not found`,
+				value: `User "${userID}" was not found`,
 			},
 		]),
 		statusCode: 404,
@@ -48,8 +48,7 @@ describe("GET /users/{user_id} (where {user_id} does not exist in DB)", () => {
 		const id = "0";
 
 		const { body } = await request.get(`/users/${id}`)
-			.set("Authorization", getToken())
-			.expect(404);
+			.set("Authorization", getToken());
 
 		expect(body).toMatchObject(getUserMissingResponse(id));
 	});
