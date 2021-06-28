@@ -21,7 +21,7 @@
     "test:i": "jest --config test/config.integration.ts",
     "clean": "del-cli dist/*",
     "build:only": "tsc --project ./tsconfig.production.json",
-    "compile": "npm run build:only -- --noEmit",
+    "compile": "tsc --project ./tsconfig.json --noEmit",
     "prebuild": "npm run clean",
     "build": "npm run build:only",
     "postbuild": "del-cli dist/**/*.type.js* dist/**/typings/**/*.js*",
