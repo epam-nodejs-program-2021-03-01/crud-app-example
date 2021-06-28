@@ -48,7 +48,8 @@ describe("GET /users/{user_id} (where {user_id} does not exist in DB)", () => {
 		const id = "0";
 
 		const { body } = await request.get(`/users/${id}`)
-			.set("Authorization", getToken());
+			.set("Authorization", getToken())
+			.expect(404);
 
 		expect(body).toMatchObject(getUserMissingResponse(id));
 	});
