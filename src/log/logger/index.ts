@@ -1,4 +1,4 @@
-import winston from "winston";
+import winston = require("winston");
 import levels from "./levels";
 import * as transports from "./transports";
 

@@ -1,4 +1,4 @@
-import supertest from "supertest";
+import supertest = require("supertest");
 import app from "./app";
 import client from "./db/client";
 import type { ErrorResponse } from "./services/http-error.service";

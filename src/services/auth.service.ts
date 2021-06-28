@@ -1,5 +1,5 @@
-import ms from "ms";
-import jwt from "jsonwebtoken";
+import ms = require("ms");
+import jwt = require("jsonwebtoken");
 import logger from "../log/logger";
 import Logged from "../log/logged.decorator";
 import type { UserType } from "../db/models/user";

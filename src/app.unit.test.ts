@@ -1,4 +1,4 @@
-import http from "http";
+import http = require("http");
 import app from "./app";
 
 describe("app", () => {

@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from "express";
-import morgan from "morgan";
+import morgan = require("morgan");
 import logger, { Level } from "../log/logger";
 
 /** @private */

@@ -1,6 +1,6 @@
 import type { ClientConfig } from "pg";
 import { timeout, TimeoutError } from "promise-timeout";
-import ms from "ms";
+import ms = require("ms");
 import client from "./client";
 
 /** @private */

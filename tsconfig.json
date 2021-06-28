@@ -10,6 +10,7 @@
 		"inlineSources": true,
 		"sourceMap": true,
 		"noEmitOnError": true,
+		"removeComments": true,
 
 		// Development
 		"lib": [
@@ -18,10 +19,8 @@
 		"checkJs": true,
 		"strict": true,
 		"noUnusedLocals": true,
-		"downlevelIteration": true,
-		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"esModuleInterop": true,
+		"esModuleInterop": false,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,

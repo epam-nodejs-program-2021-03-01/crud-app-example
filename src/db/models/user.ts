@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt = require("bcrypt");
 import type Entity from "../entity.type";
 import type { ImplyTimestamps } from "../with-timestamps.type";
 import client, { Model, DataTypes } from "../client";

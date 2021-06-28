@@ -1,6 +1,6 @@
-import winston from "winston";
+import winston = require("winston");
 import { consoleFormat } from "winston-console-format";
-import path from "path";
+import path = require("path");
 import { colors } from "./levels";
 
 export const console = new winston.transports.Console({
